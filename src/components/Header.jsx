@@ -2,6 +2,7 @@ import { isAdminUser } from "./Auth/roles";
 
 const labels = {
     start: "Home",
+    topics: "Important Topics",
     quiz: "Exam in progress",
     result: "Result",
     panel: "Student Panel",
@@ -21,9 +22,15 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                 </button>
                 <div className="head-right">
                     <span className={"status " + (screen === "quiz" ? "live" : "")}>{labels[screen]}</span>
+
                     <button type="button" className={"nav-btn " + (screen === "quiz" ? "on" : "")} onClick={() => onNav("exam")}>
                         📝 <b>Exam</b>
                     </button>
+
+                    <button type="button" className={"nav-btn " + (screen === "topics" ? "on" : "")} onClick={() => onNav("topics")}>
+                        📌 <b>Topics</b>
+                    </button>
+
                     <button type="button" className={"nav-btn " + (inPanel ? "on" : "")} onClick={() => onNav("panel")}>
                         📊 <b>Student Panel</b>
                     </button>

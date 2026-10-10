@@ -4,7 +4,7 @@ import SubjectShowcase from "./SubjectShowcase";
 import Features from "./Features";
 import { fmtTime } from "../adminpanel/ui";
 
-function StartScreen({ catalog, user, site, onStart, starting, startError, onLogin, onRetry }) {
+function StartScreen({ catalog, user, site, onStart, starting, startError, onLogin, onRetry, onTopics }) {
     const [subjectId, setSubjectId] = useState(null);
     const [examId, setExamId] = useState(null);
 
@@ -144,7 +144,7 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
                 <div className="maint">🛠 {site.maintenance_message || "Exams are closed for now."}</div>
             )}
 
-          
+
 
             {/* 2) Explore subjects */}
             <SubjectShowcase
@@ -155,7 +155,17 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
                 onPick={pickFromShowcase}
             />
 
-              {/* 1) Start your exam */}
+            <section className="topics-promo">
+                <div>
+                    <h2>📌 Important Topics</h2>
+                    <p>Subject-wise important topic, previous year question, solution and video: all in one place.</p>
+                </div>
+                <button type="button" className="btn" onClick={() => onTopics(subj ? subj.id : null)}>
+                    Browse topics →
+                </button>
+            </section>
+
+            {/* 1) Start your exam */}
             <div className="start" id="exam-section">{body}</div>
 
             {/* 3) Why choose Online MCQ Test */}

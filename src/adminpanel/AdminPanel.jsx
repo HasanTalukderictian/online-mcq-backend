@@ -10,6 +10,7 @@ import Results from "./Results";
 import Settings from "./Settings";
 import "./css/admin.css";
 import "./css/admin-extra.css";
+import Topics from "./Topics";
 
 const MENU = [
     { id: "dashboard", icon: "📊", label: "Dashboard" },
@@ -20,6 +21,7 @@ const MENU = [
     { id: "users", icon: "👤", label: "Users" },
     { id: "students", icon: "👥", label: "Students" },
     { id: "results", icon: "🏆", label: "Results" },
+    { id: "topics", icon: "📌", label: "Important topics" },
     { id: "settings", icon: "⚙️", label: "Settings" },
 ];
 
@@ -78,6 +80,7 @@ function AdminPanel({ user, token, theme, onToggleTheme, onLogout, onExit, onUse
     else if (page === "users") content = <Users token={token} me={u} onUnauthorized={onLogout} />;
     else if (page === "students") content = <Students token={token} onUnauthorized={onLogout} />;
     else if (page === "results") content = <Results token={token} onUnauthorized={onLogout} />;
+    else if (page === "topics") content = <Topics {...common} />;
     else if (page === "settings") content = <Settings token={token} user={u} onUnauthorized={onLogout} onUserUpdate={onUserUpdate} />;
     else content = <ComingSoon title={current.label} />;
 

@@ -13,6 +13,7 @@ import { apiRequest, getData } from "./adminpanel/api";
 import { getAuth, clearAuth, logoutRequest, updateStoredUser } from "./components/Auth/Auth";
 import { isAdminUser } from "./components/Auth/roles";
 import "./css/exam.css";
+import TopicsScreen from "./components/TopicsScreen";
 
 const SCREEN_KEY = "app_screen_v1";
 const ADMIN_PAGE_KEY = "admin_page_v1"; // same key as in AdminPanel.jsx
@@ -23,7 +24,7 @@ const initialScreen = () => {
     let saved = "";
     try {
         saved = sessionStorage.getItem(SCREEN_KEY) || "";
-    } catch {}
+    } catch { }
 
     // first time in this tab: an admin opens the dashboard, everybody else the home page
     if (!saved) return a && isAdminUser(a.user) ? "admin" : "start";
@@ -35,7 +36,7 @@ const initialScreen = () => {
     if (saved === "admin" && !(a && isAdminUser(a.user))) return "start";
     if ((saved === "login" || saved === "register") && a) return "start";
 
-    return ["start", "login", "register", "panel", "admin"].includes(saved) ? saved : "start";
+    return ["start", "login", "register", "panel", "admin", "topics"].includes(saved) ? saved : "start";
 };
 
 const DEFAULT_SITE = {
@@ -74,10 +75,13 @@ const toResult = (a) => {
     };
 };
 
+
+
 function App() {
     const [auth, setAuth] = useState(getAuth); // { user, token } or null
     const [screen, setScreen] = useState(initialScreen);
     const [leaveAsk, setLeaveAsk] = useState(false);
+    const [topicsFocus, setTopicsFocus] = useState(null);
     const [pending, setPending] = useState("start");
     const [pendingExam, setPendingExam] = useState(null); // exam a guest wanted to start
     const [theme, setTheme] = useState(() => {
@@ -112,12 +116,12 @@ function App() {
 
     useEffect(() => {
         document.documentElement.dataset.theme = theme;
-        try { localStorage.setItem("theme", theme); } catch {}
+        try { localStorage.setItem("theme", theme); } catch { }
     }, [theme]);
 
     // remember the current page, so a refresh keeps you here
     useEffect(() => {
-        try { sessionStorage.setItem(SCREEN_KEY, screen); } catch {}
+        try { sessionStorage.setItem(SCREEN_KEY, screen); } catch { }
     }, [screen]);
 
     // an exam cannot be resumed, so warn before the page is refreshed or closed
@@ -134,7 +138,7 @@ function App() {
     useEffect(() => {
         apiRequest("/public/settings")
             .then((b) => setSite({ ...DEFAULT_SITE, ...(getData(b) || {}) }))
-            .catch(() => {});
+            .catch(() => { });
     }, []);
 
     useEffect(() => {
@@ -158,7 +162,7 @@ function App() {
     }, [token]);
 
     const forgetAdminPage = () => {
-        try { sessionStorage.removeItem(ADMIN_PAGE_KEY); } catch {}
+        try { sessionStorage.removeItem(ADMIN_PAGE_KEY); } catch { }
     };
 
     const forceLogout = () => {
@@ -171,6 +175,11 @@ function App() {
     const updateUser = (user) => {
         updateStoredUser(user);
         setAuth((a) => (a ? { ...a, user } : a));
+    };
+
+    const openTopics = (subjectId) => {
+        setTopicsFocus(subjectId || null);
+        go("topics");
     };
 
     /* ---------- start an exam ---------- */
@@ -355,8 +364,13 @@ function App() {
                         startError={startError}
                         onLogin={() => go("login")}
                         onRetry={loadCatalog}
+                        onTopics={openTopics}
                     />
                 )}
+                {screen === "topics" && (
+                    <TopicsScreen initialSubjectId={topicsFocus} onBack={() => go("start")} />
+                )}
+
                 {screen === "login" && (
                     <Login
                         onSuccess={handleLogin}
