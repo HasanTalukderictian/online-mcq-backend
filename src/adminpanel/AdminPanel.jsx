@@ -11,6 +11,7 @@ import Settings from "./Settings";
 import "./css/admin.css";
 import "./css/admin-extra.css";
 import Topics from "./Topics";
+import CircularsAdmin from "./CircularsAdmin";
 
 const MENU = [
     { id: "dashboard", icon: "📊", label: "Dashboard" },
@@ -22,7 +23,9 @@ const MENU = [
     { id: "students", icon: "👥", label: "Students" },
     { id: "results", icon: "🏆", label: "Results" },
     { id: "topics", icon: "📌", label: "Important topics" },
+    { id: "circulars", icon: "💼", label: "Job circulars" },
     { id: "settings", icon: "⚙️", label: "Settings" },
+
 ];
 
 // the open admin page is remembered, so a refresh does not send you back to the dashboard
@@ -81,6 +84,7 @@ function AdminPanel({ user, token, theme, onToggleTheme, onLogout, onExit, onUse
     else if (page === "students") content = <Students token={token} onUnauthorized={onLogout} />;
     else if (page === "results") content = <Results token={token} onUnauthorized={onLogout} />;
     else if (page === "topics") content = <Topics {...common} />;
+    else if (page === "circulars") content = <CircularsAdmin token={token} onUnauthorized={onLogout} />;
     else if (page === "settings") content = <Settings token={token} user={u} onUnauthorized={onLogout} onUserUpdate={onUserUpdate} />;
     else content = <ComingSoon title={current.label} />;
 

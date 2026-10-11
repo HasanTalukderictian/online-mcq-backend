@@ -1,0 +1,186 @@
+/* ============================================================
+   Site Footer — redesigned
+   ============================================================ */
+
+.site-footer {
+    margin-top: 40px;
+    background: var(--card, #0f172a);
+    border-top: 1px solid var(--line, #e5e7eb);
+    color: var(--ink, #111827);
+}
+
+.site-footer-in {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px 24px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 32px;
+}
+
+
+/* ---------- Columns ---------- */
+
+.ft-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ft-logo {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary, #2563eb);
+    letter-spacing: 0.2px;
+}
+
+.ft-tagline {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink, #111827);
+}
+
+.ft-desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--muted, #6b7280);
+    max-width: 380px;
+}
+
+.ft-title {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted, #6b7280);
+}
+
+
+/* ---------- Lists ---------- */
+
+.ft-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ft-list a {
+    font-size: 14px;
+    color: var(--ink, #111827);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.ft-list a:hover {
+    color: var(--primary, #2563eb);
+    text-decoration: underline;
+}
+
+.ft-muted {
+    font-size: 13px;
+    color: var(--muted, #6b7280);
+}
+
+
+/* ---------- Credit link ---------- */
+
+.dev-link {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary, #2563eb);
+    text-decoration: none;
+    padding: 4px 0;
+    transition: color 0.15s;
+}
+
+.dev-link:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+
+/* ---------- Bottom bar ---------- */
+
+.ft-bottom {
+    border-top: 1px solid var(--line, #e5e7eb);
+    padding: 16px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--muted, #6b7280);
+}
+
+.ft-heart {
+    color: #ef4444;
+}
+
+
+/* ---------- Dark theme ---------- */
+
+[data-theme="dark"] .site-footer,
+html[data-theme="dark"] .site-footer {
+    background: #0b1220;
+    border-top-color: #1f2937;
+    color: #e5e7eb;
+}
+
+[data-theme="dark"] .ft-title,
+[data-theme="dark"] .ft-muted,
+[data-theme="dark"] .ft-desc {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .ft-list a {
+    color: #e5e7eb;
+}
+
+[data-theme="dark"] .ft-list a:hover {
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .dev-link {
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .ft-bottom {
+    border-top-color: #1f2937;
+    color: #94a3b8;
+}
+
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 720px) {
+    .site-footer-in {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        padding: 32px 18px 20px;
+    }
+    .ft-brand {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-footer-in {
+        grid-template-columns: 1fr;
+    }
+    .ft-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+    }
+}

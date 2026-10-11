@@ -3,6 +3,7 @@ import { isAdminUser } from "./Auth/roles";
 const labels = {
     start: "Home",
     topics: "Important Topics",
+    circulars: "Circulars",
     quiz: "Exam in progress",
     result: "Result",
     panel: "Student Panel",
@@ -24,37 +25,37 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                     <span className={"status " + (screen === "quiz" ? "live" : "")}>{labels[screen]}</span>
 
                     <button type="button" className={"nav-btn " + (screen === "quiz" ? "on" : "")} onClick={() => onNav("exam")}>
-                        📝 <b>Exam</b>
+                        <b>Exam</b>
                     </button>
 
                     <button type="button" className={"nav-btn " + (screen === "topics" ? "on" : "")} onClick={() => onNav("topics")}>
-                        📌 <b>Topics</b>
+                        <b>Topics</b>
+                    </button>
+
+                    <button type="button" className={"nav-btn " + (screen === "circulars" ? "on" : "")} onClick={() => onNav("circulars")}>
+                        <b>Circulars</b>
                     </button>
 
                     <button type="button" className={"nav-btn " + (inPanel ? "on" : "")} onClick={() => onNav("panel")}>
-                        📊 <b>Student Panel</b>
+                        <b>Student Panel</b>
                     </button>
 
                     {user ? (
                         <>
                             {isAdminUser(user) && (
                                 <button type="button" className="nav-btn" onClick={() => onNav("admin")}>
-                                    🛠 <b>Dashboard</b>
+                                    <b>Dashboard</b>
                                 </button>
                             )}
-                            <span className="user-chip" title={user.email}>👤 <b>{user.name}</b></span>
+                            <span className="user-chip" title={user.email}><b>{user.name}</b></span>
                             <button type="button" className="nav-btn" onClick={onLogout}>Logout</button>
                         </>
                     ) : (
                         <>
                             <button type="button" className={"nav-btn " + (screen === "login" ? "on" : "")} onClick={() => onNav("login")}>
-                                🔑 <b>Login</b>
+                                <b>Login</b>
                             </button>
-                            {site.registration_open && (
-                                <button type="button" className={"nav-btn solid " + (screen === "register" ? "on" : "")} onClick={() => onNav("register")}>
-                                    ✍️ <b>Sign up</b>
-                                </button>
-                            )}
+                            
                         </>
                     )}
 
@@ -65,7 +66,6 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                         aria-label={dark ? "Switch to day mode" : "Switch to night mode"}
                         title={dark ? "Day mode" : "Night mode"}
                     >
-                        <span>{dark ? "☀️" : "🌙"}</span>
                         <b>{dark ? "Day" : "Night"}</b>
                     </button>
                 </div>

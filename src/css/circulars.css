@@ -1,0 +1,475 @@
+/* ============================================================
+   Circulars Screen Styles
+   ============================================================ */
+
+.cr-wrap {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.cr-wrap>.btn {
+    align-self: flex-start;
+}
+
+.cr-head h1 {
+    margin: 6px 0 8px;
+}
+
+.cr-head p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.cr-head {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 0 4px;
+}
+
+.cr-head .eyebrow {
+    display: inline-block;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.cr-head h1 {
+    margin: 6px 0 8px;
+    text-align: center;
+}
+
+.cr-head p {
+    margin: 0;
+    color: var(--muted);
+    max-width: 680px;
+    text-align: center;
+    line-height: 1.55;
+}
+
+
+/* ---------- Tabs ---------- */
+
+.cr-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: -8px;
+    position: relative;
+    z-index: 1;
+}
+
+.cr-tabs button {
+    padding: 10px 18px;
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cr-tabs button:hover {
+    background: var(--paper);
+}
+
+.cr-tabs button.on {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+
+/* ---------- Box ---------- */
+
+.cr-box {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 0 14px 14px 14px;
+    background: var(--card);
+}
+
+.cr-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.cr-show,
+.cr-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.cr-show select,
+.cr-search input {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+}
+
+.cr-search input {
+    width: 220px;
+    max-width: 100%;
+}
+
+.cr-closed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+
+/* ---------- Table ---------- */
+
+.cr-tbl-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+.cr-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.cr-tbl th,
+.cr-tbl td {
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+}
+
+.cr-tbl th {
+    background: var(--paper);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cr-tbl tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.cr-tbl tbody tr:hover {
+    background: var(--paper);
+}
+
+.cr-tbl tr.closed {
+    opacity: .6;
+}
+
+.cr-tbl a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.cr-tbl a:hover {
+    text-decoration: underline;
+}
+
+.cr-sn {
+    width: 56px;
+}
+
+.cr-act {
+    text-align: center !important;
+    white-space: nowrap;
+}
+
+.cr-sort {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cr-sort:hover {
+    color: var(--primary);
+}
+
+.cr-empty {
+    text-align: center !important;
+    color: var(--muted);
+    padding: 28px !important;
+}
+
+.cr-left {
+    display: block;
+    margin-top: 3px;
+    color: var(--bad);
+    font-weight: 700;
+}
+
+.cr-badge {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--muted);
+}
+
+.cr-tbl a.cr-apply {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 14px;
+}
+
+.cr-tbl a.cr-apply:hover {
+    text-decoration: none;
+    opacity: .9;
+}
+
+
+/* ---------- Footer / Pagination ---------- */
+
+.cr-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.cr-pages {
+    display: flex;
+    gap: 0;
+}
+
+.cr-pages button {
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+    margin-left: -1px;
+}
+
+.cr-pages button:first-child {
+    border-radius: 8px 0 0 8px;
+    margin-left: 0;
+}
+
+.cr-pages button:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.cr-pages button.on {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.cr-pages button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+
+/* ============================================================
+   Admin form .tp-select dropdown fix
+   (এই class টা admin panel এর Add/Edit circular form এ ব্যবহৃত হয়)
+   ============================================================ */
+
+.tp-select {
+    background-color: #ffffff;
+    color: #16213e;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 14px;
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    box-sizing: border-box;
+}
+
+.tp-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+
+/* ⭐ Dropdown খোলার পর option গুলো readable রাখো */
+
+.tp-select option {
+    background-color: #ffffff !important;
+    color: #16213e !important;
+    padding: 8px 12px;
+}
+
+
+/* ---------- Dark theme ---------- */
+
+[data-theme="dark"] .tp-select,
+html[data-theme="dark"] .tp-select,
+body[data-theme="dark"] .tp-select {
+    background-color: #1e293b;
+    color: #f1f5f9;
+    border-color: #475569;
+}
+
+[data-theme="dark"] .tp-select:focus,
+html[data-theme="dark"] .tp-select:focus,
+body[data-theme="dark"] .tp-select:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
+}
+
+[data-theme="dark"] .tp-select option,
+html[data-theme="dark"] .tp-select option,
+body[data-theme="dark"] .tp-select option {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+
+/* ---------- Firefox override ---------- */
+
+@-moz-document url-prefix() {
+    .tp-select option {
+        background-color: #ffffff;
+        color: #16213e;
+    }
+    [data-theme="dark"] .tp-select option {
+        background-color: #1e293b;
+        color: #f1f5f9;
+    }
+}
+
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 560px) {
+    .cr-box {
+        padding: 12px;
+    }
+    .cr-search {
+        width: 100%;
+    }
+    .cr-search input {
+        flex: 1;
+        width: auto;
+    }
+}
+
+
+/* ============================================================
+   Admin Form Dropdown — Table filter এর মতো same style
+   ============================================================ */
+
+
+/* Form এর ভিতরে থাকা সব tp-select */
+
+.form-group .tp-select,
+.form-field .tp-select,
+.modal .tp-select,
+.modal-content .tp-select,
+.tp-form .tp-select,
+form .tp-select {
+    background-color: #ffffff !important;
+    color: #16213e !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-group .tp-select:focus,
+.form-field .tp-select:focus,
+.modal .tp-select:focus,
+.modal-content .tp-select:focus,
+.tp-form .tp-select:focus,
+form .tp-select:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
+
+
+/* ⭐ Option গুলো — Table filter এর মতো exact same look */
+
+.form-group .tp-select option,
+.form-field .tp-select option,
+.modal .tp-select option,
+.modal-content .tp-select option,
+.tp-form .tp-select option,
+form .tp-select option {
+    background-color: #ffffff !important;
+    color: #16213e !important;
+    padding: 10px 14px !important;
+}
+
+
+/* Dark theme */
+
+[data-theme="dark"] .form-group .tp-select,
+[data-theme="dark"] .form-field .tp-select,
+[data-theme="dark"] .modal .tp-select,
+[data-theme="dark"] .modal-content .tp-select,
+[data-theme="dark"] .tp-form .tp-select,
+[data-theme="dark"] form .tp-select {
+    background-color: #ffffff !important;
+    color: #16213e !important;
+    border-color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .form-group .tp-select option,
+[data-theme="dark"] .form-field .tp-select option,
+[data-theme="dark"] .modal .tp-select option,
+[data-theme="dark"] .modal-content .tp-select option,
+[data-theme="dark"] .tp-form .tp-select option,
+[data-theme="dark"] form .tp-select option {
+    background-color: #ffffff !important;
+    color: #16213e !important;
+}

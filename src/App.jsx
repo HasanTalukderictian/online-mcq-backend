@@ -14,6 +14,7 @@ import { getAuth, clearAuth, logoutRequest, updateStoredUser } from "./component
 import { isAdminUser } from "./components/Auth/roles";
 import "./css/exam.css";
 import TopicsScreen from "./components/TopicsScreen";
+import CircularsScreen from "./components/CircularsScreen";
 
 const SCREEN_KEY = "app_screen_v1";
 const ADMIN_PAGE_KEY = "admin_page_v1"; // same key as in AdminPanel.jsx
@@ -36,7 +37,7 @@ const initialScreen = () => {
     if (saved === "admin" && !(a && isAdminUser(a.user))) return "start";
     if ((saved === "login" || saved === "register") && a) return "start";
 
-    return ["start", "login", "register", "panel", "admin", "topics"].includes(saved) ? saved : "start";
+    return ["start", "login", "register", "panel", "admin", "topics", "circulars"].includes(saved) ? saved : "start";
 };
 
 const DEFAULT_SITE = {
@@ -365,11 +366,14 @@ function App() {
                         onLogin={() => go("login")}
                         onRetry={loadCatalog}
                         onTopics={openTopics}
+                        onCirculars={() => go("circulars")}
                     />
                 )}
                 {screen === "topics" && (
                     <TopicsScreen initialSubjectId={topicsFocus} onBack={() => go("start")} />
                 )}
+
+                {screen === "circulars" && <CircularsScreen onBack={() => go("start")} />}
 
                 {screen === "login" && (
                     <Login

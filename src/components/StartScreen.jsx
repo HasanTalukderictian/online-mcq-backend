@@ -4,7 +4,7 @@ import SubjectShowcase from "./SubjectShowcase";
 import Features from "./Features";
 import { fmtTime } from "../adminpanel/ui";
 
-function StartScreen({ catalog, user, site, onStart, starting, startError, onLogin, onRetry, onTopics }) {
+function StartScreen({ catalog, user, site, onStart, starting, startError, onLogin, onRetry, onTopics, onCirculars }) {
     const [subjectId, setSubjectId] = useState(null);
     const [examId, setExamId] = useState(null);
 
@@ -155,7 +155,14 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
                 onPick={pickFromShowcase}
             />
 
-            <section className="topics-promo">
+            
+
+            
+
+            {/* 1) Start your exam */}
+            <div className="start" id="exam-section">{body}</div>
+
+            {/* <section className="topics-promo">
                 <div>
                     <h2>📌 Important Topics</h2>
                     <p>Subject-wise important topic, previous year question, solution and video: all in one place.</p>
@@ -165,8 +172,15 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
                 </button>
             </section>
 
-            {/* 1) Start your exam */}
-            <div className="start" id="exam-section">{body}</div>
+            <section className="topics-promo">
+                <div>
+                    <h2>💼 Job Circulars</h2>
+                    <p>Latest govt, teacher and M.Sc job circulars with end dates and Apply links.</p>
+                </div>
+                <button type="button" className="btn" onClick={onCirculars}>
+                    See circulars →
+                </button>
+            </section> */}
 
             {/* 3) Why choose Online MCQ Test */}
             <Features />

@@ -184,7 +184,7 @@ function TopicsScreen({ initialSubjectId, onBack }) {
     /* ---------- topic list ---------- */
     return (
         <section className="tpc-wrap">
-            <button type="button" className="btn ghost" onClick={onBack}>← Home</button>
+            <button type="button" className="btn ghost" onClick={onBack}>Home</button>
 
             <header className="tpc-head">
                 <span className="eyebrow">Study material</span>
