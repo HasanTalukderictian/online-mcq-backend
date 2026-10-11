@@ -473,3 +473,78 @@ form .tp-select option {
     background-color: #ffffff !important;
     color: #16213e !important;
 }
+
+@media (max-width: 640px) {
+    .cr-tbl-wrap {
+        border: 0;
+        overflow: visible;
+    }
+    .cr-tbl,
+    .cr-tbl tbody,
+    .cr-tbl tr,
+    .cr-tbl td {
+        display: block;
+        width: 100%;
+    }
+    .cr-tbl thead {
+        display: none;
+    }
+    .cr-tbl tr {
+        margin-bottom: 12px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--card);
+    }
+    .cr-tbl tbody tr:hover {
+        background: var(--card);
+    }
+    .cr-tbl td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 6px 0;
+        border: 0;
+        text-align: right;
+    }
+    .cr-tbl td::before {
+        content: attr(data-label);
+        flex: none;
+        font-weight: 700;
+        color: var(--muted);
+        text-align: left;
+    }
+    .cr-tbl td.cr-sn {
+        display: none;
+    }
+    .cr-tbl td.cr-act {
+        justify-content: space-between;
+        padding-top: 10px;
+        margin-top: 4px;
+        border-top: 1px solid var(--line);
+    }
+    .cr-tbl td.cr-empty {
+        display: block;
+        text-align: center;
+    }
+    .cr-tbl td.cr-empty::before {
+        content: none;
+    }
+    .cr-left {
+        text-align: right;
+    }
+    .cr-foot {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    .cr-pages {
+        justify-content: center;
+    }
+    .cr-tabs button {
+        flex: 1 1 auto;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+}

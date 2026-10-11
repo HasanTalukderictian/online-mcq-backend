@@ -188,7 +188,7 @@ function TopicsScreen({ initialSubjectId, onBack }) {
 
             <header className="tpc-head">
                 <span className="eyebrow">Study material</span>
-                <h1>📌 Important Topics</h1>
+                <h1> Important Topics</h1>
                 <p>Pick a subject and open a topic to see previous year questions with solutions and videos.</p>
             </header>
 

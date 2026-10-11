@@ -1909,3 +1909,100 @@ button.logo:hover i {
         transition: none;
     }
 }
+
+
+/* ---------- small screens: grids, promo cards, modals ---------- */
+
+.ft-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+}
+
+.tpc-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+}
+
+.subj-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+}
+
+.tpc-q-text,
+.tpc-opts li span,
+.tpc-sol-text p,
+.cr-tbl td {
+    overflow-wrap: anywhere;
+}
+
+.tpc-video,
+.tpc-video iframe {
+    max-width: 100%;
+}
+
+@media (max-width: 640px) {
+    .topics-promo {
+        padding: 18px;
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    .topics-promo .btn {
+        width: 100%;
+    }
+    .tpc-tools {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .tpc-tools .btn {
+        width: 100%;
+    }
+    .tpc-q {
+        padding: 16px;
+    }
+    .tpc-wrap>.btn,
+    .cr-wrap>.btn {
+        align-self: stretch;
+        text-align: center;
+    }
+    .ft-steps {
+        padding: 16px;
+    }
+    .ft-card {
+        padding: 16px;
+    }
+    /* admin: modals fill the phone screen, bars stack */
+    .tp-overlay {
+        padding: 0;
+        align-items: stretch;
+    }
+    .tp-modal,
+    .tp-modal.wide {
+        max-width: 100%;
+        min-height: 100%;
+        border-radius: 0;
+        padding: 18px 16px 24px;
+    }
+    .tp-foot {
+        position: sticky;
+        bottom: 0;
+        padding: 12px 0 0;
+        background: var(--card);
+    }
+    .tp-foot .btn {
+        flex: 1;
+    }
+    .tp-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .tp-bar .tp-select,
+    .tp-bar .tp-input {
+        width: 100% !important;
+        min-width: 0;
+        max-width: 100%;
+    }
+    .tp-actions .btn {
+        flex: 1 1 auto;
+    }
+    .tp-clip {
+        max-width: 200px;
+    }
+}

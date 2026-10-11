@@ -182,21 +182,21 @@ function CircularsScreen({ onBack }) {
                                     ) : (
                                         slice.map((r, i) => (
                                             <tr key={r.id} className={r.expired ? "closed" : ""}>
-                                                <td className="cr-sn">{from + i + 1}</td>
-                                                <td>
+                                                <td className="cr-sn" data-label="SN">{from + i + 1}</td>
+                                                <td data-label="Circular">
                                                     {r.link_url ? (
                                                         <a href={r.link_url} target="_blank" rel="noopener noreferrer">{r.organization}</a>
                                                     ) : (
                                                         <span>{r.organization}</span>
                                                     )}
                                                 </td>
-                                                <td>{r.designation || "-"}</td>
-                                                <td>{fmtDate(r.start_date)}</td>
-                                                <td>
+                                                <td data-label="Designation">{r.designation || "-"}</td>
+                                                <td data-label="Start date">{fmtDate(r.start_date)}</td>
+                                                <td data-label="End date">
                                                     {fmtDate(r.end_date)}
                                                     {ends(r)}
                                                 </td>
-                                                <td className="cr-act">
+                                                <td className="cr-act" data-label="Action">
                                                     {r.expired ? (
                                                         <span className="cr-badge">Closed</span>
                                                     ) : r.apply_url ? (

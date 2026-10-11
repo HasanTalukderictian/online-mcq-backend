@@ -1,0 +1,107 @@
+/* ============================================================
+   ULTIMATE OVERRIDE — Subject + Exam → 1 column on mobile
+   (place this in index.css / App.css, LAST)
+   ============================================================ */
+
+@media (max-width: 720px) {
+    /* ---------- SUBJECT picker ---------- */
+    .start .subjects,
+    .start .panel .subjects,
+    .pick-scroll .subjects,
+    .subjects,
+    .subject-grid,
+    .subjects-grid,
+    .subject-list,
+    .showcase-grid,
+    .showcase {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+    .start .subj,
+    .start .panel .subj,
+    .pick-scroll .subj,
+    .subj,
+    .subject-card,
+    .subj-card,
+    .showcase-card {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 56px !important;
+        padding: 14px 16px !important;
+        font-size: 14.5px !important;
+        text-align: left !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        box-sizing: border-box !important;
+    }
+    .subj span,
+    .subject-card span,
+    .subj-card span,
+    .showcase-card span {
+        font-size: 20px !important;
+        flex-shrink: 0 !important;
+        margin-right: 6px !important;
+    }
+    /* ---------- EXAM list ---------- */
+    .start .exam-list,
+    .start .panel .exam-list,
+    .pick-scroll .exam-list,
+    .exam-list {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+    .start .exam-opt,
+    .start .panel .exam-opt,
+    .pick-scroll .exam-opt,
+    .exam-opt {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 14px 16px !important;
+        font-size: 14px !important;
+        box-sizing: border-box !important;
+    }
+    .exam-opt b {
+        font-size: 14.5px !important;
+    }
+    .exam-opt small {
+        font-size: 12.5px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .subjects,
+    .exam-list,
+    .subject-grid,
+    .subjects-grid,
+    .subject-list,
+    .showcase-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+    .subj,
+    .subject-card,
+    .subj-card,
+    .showcase-card {
+        padding: 12px 14px !important;
+        font-size: 14px !important;
+        min-height: 52px !important;
+    }
+    .subj span {
+        font-size: 18px !important;
+    }
+    .exam-opt {
+        padding: 12px 14px !important;
+    }
+}

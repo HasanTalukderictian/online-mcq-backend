@@ -1,228 +1,275 @@
-.start-card {
-    max-width: 520px;
-    width: 100%;
-    padding: 40px 32px;
-    position: relative;
-    overflow: hidden;
-}
+/* ============================================================
+   StartScreen.css — full responsive (1-column subjects on mobile)
+   ============================================================ */
 
 
-/* Decorative gradient top border */
+/* ---------- Layout wrapper ---------- */
 
-.start-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, #667eea, #764ba2, #11998e, #38ef7d);
-    background-size: 300% 100%;
-    animation: gradientMove 4s linear infinite;
-}
-
-@keyframes gradientMove {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 300% 50%;
-    }
-}
-
-
-/* Header */
-
-.start-header {
-    text-align: center;
-    margin-bottom: 28px;
-}
-
-.start-icon {
-    font-size: 56px;
-    margin-bottom: 8px;
-    display: inline-block;
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-.start-title {
-    font-size: 34px;
-    font-weight: 800;
-    margin-bottom: 6px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.5px;
-}
-
-.start-subtitle {
-    color: #8a94a6;
-    font-size: 14px;
-    margin: 0;
-    font-weight: 500;
-}
-
-
-/* Section Label */
-
-.section-label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-    margin-top: 6px;
-}
-
-.section-label span {
-    font-size: 13px;
-    font-weight: 700;
-    color: #4a5568;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-}
-
-
-/* Subject Grid */
-
-.subject-grid {
+.start {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 20px;
+    align-items: start;
+    box-sizing: border-box;
 }
 
-.subject-card {
-    position: relative;
-    background: #f7f8fc;
-    border: 2px solid transparent;
-    border-radius: 14px;
-    padding: 18px 14px;
+.start .panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 26px;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: visible;
+}
+
+.start .panel h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 6px;
+    color: var(--ink);
+    line-height: 1.2;
+}
+
+.start .panel .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 18px;
+}
+
+
+/* ---------- Account pill ---------- */
+
+.acct {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.acct.in {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: #3730a3;
+    font-weight: 600;
+}
+
+.link-btn {
+    background: none;
+    border: 0;
+    color: var(--primary);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+}
+
+
+/* ---------- Subject / Exam picker wrapper ---------- */
+
+.pick-scroll {
+    display: block;
+    margin-bottom: 16px;
+}
+
+.pick-scroll .label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--muted);
+    margin: 14px 0 8px;
+}
+
+
+/* ---------- Subjects (base / desktop) ---------- */
+
+.subjects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+}
+
+.subj {
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 8px;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: inherit;
-}
-
-.subject-card:hover {
-    background: #ffffff;
-    border-color: #e0e4ff;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
-}
-
-.subject-card.active {
-    background: #ffffff;
-    border-color: var(--subject-color);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
-    transform: translateY(-3px);
-}
-
-.subject-icon {
-    font-size: 28px;
-    line-height: 1;
-}
-
-.subject-name {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
     font-size: 13px;
-    font-weight: 700;
-    color: #2d3748;
-    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+    white-space: normal;
+    word-break: break-word;
     line-height: 1.3;
-}
-
-.subject-card.active .subject-name {
-    color: var(--subject-color);
-}
-
-.subject-check {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--subject-color);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.25s ease;
-}
-
-.subject-card.active .subject-check {
-    opacity: 1;
-    transform: scale(1);
-}
-
-
-/* Time Input */
-
-.time-input-wrap {
-    position: relative;
-    margin-bottom: 24px;
-}
-
-.time-input {
+    text-align: left;
+    min-height: 52px;
+    box-sizing: border-box;
     width: 100%;
-    border: 2px solid #e6e9f0;
-    border-radius: 14px;
-    padding: 14px 60px 14px 18px;
+}
+
+.subj:hover {
+    border-color: var(--c, var(--primary));
+    transform: translateY(-1px);
+}
+
+.subj.on {
+    background: var(--c, var(--primary));
+    border-color: var(--c, var(--primary));
+    color: #fff;
+}
+
+.subj span {
     font-size: 18px;
-    font-weight: 700;
-    color: #2d3748;
-    background: #f7f8fc;
-    transition: all 0.25s ease;
-    outline: none;
+    line-height: 1;
+    flex-shrink: 0;
 }
 
-.time-input:focus {
-    border-color: #667eea;
-    background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+
+/* ---------- Exam list ---------- */
+
+.exam-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
 }
 
-.time-suffix {
-    position: absolute;
-    right: 18px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #8a94a6;
-    font-weight: 700;
+.exam-opt {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+    transition: all .15s ease;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.exam-opt b {
     font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    pointer-events: none;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.exam-opt small {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.exam-opt:hover:not(:disabled) {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.exam-opt.on {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.exam-opt.on small {
+    color: rgba(255, 255, 255, .85);
+}
+
+.exam-opt.done {
+    opacity: .6;
+    cursor: not-allowed;
+    background: #f0fdf4;
+    border-color: #86efac;
+    color: #166534;
+}
+
+.exam-opt:disabled {
+    cursor: not-allowed;
 }
 
 
-/* Info Row */
+/* ---------- Errors ---------- */
 
-.info-row {
+.err {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    font-size: 13px;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+
+/* ---------- Rules panel ---------- */
+
+.rules h2 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 12px;
+    color: var(--ink);
+}
+
+.rules ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rules ul li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.rules ul li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--primary);
+    font-weight: 900;
+}
+
+
+/* ---------- Facts grid ---------- */
+
+.facts {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
 }
 
-.info-chip {
-    background: #f7f8fc;
+.facts>div {
+    background: var(--paper);
+    border: 1px solid var(--line);
     border-radius: 12px;
     padding: 12px 8px;
     text-align: center;
@@ -231,58 +278,325 @@
     gap: 2px;
 }
 
-.info-chip strong {
+.facts b {
     font-size: 18px;
     font-weight: 800;
-    color: #667eea;
+    color: var(--primary);
     line-height: 1.2;
 }
 
-.info-chip small {
+.facts small {
     font-size: 10px;
     font-weight: 700;
-    color: #8a94a6;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color: var(--muted);
 }
 
 
-/* Start Button */
+/* ---------- Start button ---------- */
 
-.start-btn {
+.btn.full {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px 18px;
+    border: 0;
+    border-radius: 12px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
-    border: none;
-    border-radius: 14px;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    cursor: pointer;
+    transition: all .25s ease;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, .35);
 }
 
-.start-btn:hover {
-    color: #fff;
+.btn.full:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(102, 126, 234, 0.5);
+    box-shadow: 0 12px 28px rgba(102, 126, 234, .45);
 }
 
-.start-btn:active {
-    transform: translateY(0);
+.btn.full:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 
-/* Responsive */
+/* ---------- Loading box ---------- */
 
-@media (max-width: 480px) {
-    .start-card {
-        padding: 28px 20px;
+.loading-box {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+}
+
+.loading-box h2 {
+    color: var(--ink);
+    margin: 0 0 8px;
+}
+
+
+/* ============================================================
+   Tablet (<= 900px) — stack the two panels
+   ============================================================ */
+
+@media (max-width: 900px) {
+    .start {
+        grid-template-columns: 1fr;
+        padding: 20px 16px;
+        gap: 16px;
     }
-    .start-title {
-        font-size: 28px;
+    .start .panel {
+        padding: 22px 20px;
     }
-    .start-icon {
-        font-size: 48px;
+}
+
+
+/* ============================================================
+   Mobile (<= 720px) — 1 column subjects
+   ============================================================ */
+
+@media (max-width: 720px) {
+    .start {
+        padding: 16px 12px;
+        gap: 14px;
+    }
+    .start .panel {
+        padding: 20px 16px;
+        border-radius: 14px;
+    }
+    .start .panel h1 {
+        font-size: 22px;
+        line-height: 1.25;
+    }
+    .start .panel .sub {
+        font-size: 13px;
+        margin-bottom: 14px;
+    }
+    /* Account pill */
+    .acct {
+        padding: 10px 12px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    /* ✅ Subjects — এক কলাম (১টা করে) */
+    .subjects {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .subj {
+        padding: 12px 14px;
+        font-size: 14px;
+        min-height: 52px;
+        gap: 10px;
+        align-items: center;
+        white-space: normal;
+        word-break: break-word;
+        overflow: visible;
+        text-overflow: clip;
+    }
+    .subj span {
+        font-size: 20px;
+    }
+    /* Exam list */
+    .exam-opt {
+        padding: 12px 14px;
+    }
+    .exam-opt b {
+        font-size: 14px;
+    }
+    .exam-opt small {
+        font-size: 12px;
+    }
+    /* Rules */
+    .rules h2 {
+        font-size: 18px;
+    }
+    .rules ul li {
+        font-size: 13px;
+        padding-left: 20px;
+    }
+    /* Facts */
+    .facts {
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .facts>div {
+        padding: 10px 6px;
+    }
+    .facts b {
+        font-size: 16px;
+    }
+    .facts small {
+        font-size: 9.5px;
+        letter-spacing: 0.3px;
+    }
+    /* Start button */
+    .btn.full {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+}
+
+
+/* ============================================================
+   Small mobile (<= 400px)
+   ============================================================ */
+
+@media (max-width: 400px) {
+    .start {
+        padding: 12px 10px;
+    }
+    .start .panel {
+        padding: 16px 14px;
+    }
+    .start .panel h1 {
+        font-size: 20px;
+    }
+    /* Subjects — still 1 column */
+    .subjects {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    .subj {
+        padding: 11px 12px;
+        font-size: 13.5px;
+        min-height: 50px;
+        gap: 8px;
+    }
+    .subj span {
+        font-size: 18px;
+    }
+    .exam-opt b {
+        font-size: 13.5px;
+    }
+    .exam-opt small {
+        font-size: 11.5px;
+    }
+    /* Facts */
+    .facts {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+    .facts b {
+        font-size: 15px;
+    }
+    .facts small {
+        font-size: 9px;
+    }
+    .rules ul li {
+        font-size: 12.5px;
+    }
+    .btn.full {
+        font-size: 14px;
+        padding: 13px 14px;
+    }
+}
+
+
+/* ============================================================
+   FINAL OVERRIDE — force 1 column subjects on mobile
+   (StartScreen + SubjectShowcase both)
+   ============================================================ */
+
+
+/* ============================================================
+   FINAL MOBILE OVERRIDE
+   Subject + Exam → 1 column on mobile (force)
+   ============================================================ */
+
+@media (max-width: 720px) {
+    /* ---------- Subject picker — 1 column ---------- */
+    .start .subjects,
+    .start .panel .subjects,
+    .pick-scroll .subjects,
+    .subjects {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+    .start .subj,
+    .start .panel .subj,
+    .pick-scroll .subj,
+    .subj {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 56px !important;
+        padding: 14px 16px !important;
+        font-size: 14.5px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        box-sizing: border-box !important;
+    }
+    .start .subj span,
+    .subj span {
+        font-size: 20px !important;
+        flex-shrink: 0 !important;
+        margin-right: 6px !important;
+    }
+    /* ---------- Exam list — 1 column ---------- */
+    .start .exam-list,
+    .start .panel .exam-list,
+    .pick-scroll .exam-list,
+    .exam-list {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+    .start .exam-opt,
+    .start .panel .exam-opt,
+    .pick-scroll .exam-opt,
+    .exam-opt {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 14px 16px !important;
+        font-size: 14px !important;
+        box-sizing: border-box !important;
+    }
+    .exam-opt b {
+        font-size: 14.5px !important;
+    }
+    .exam-opt small {
+        font-size: 12.5px !important;
+    }
+}
+
+
+/* ---------- Extra small (<= 400px) ---------- */
+
+@media (max-width: 400px) {
+    .subjects,
+    .exam-list {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+    .subj {
+        padding: 12px 14px !important;
+        font-size: 14px !important;
+        min-height: 52px !important;
+    }
+    .subj span {
+        font-size: 18px !important;
+    }
+    .exam-opt {
+        padding: 12px 14px !important;
+    }
+    .exam-opt b {
+        font-size: 14px !important;
+    }
+    .exam-opt small {
+        font-size: 12px !important;
     }
 }

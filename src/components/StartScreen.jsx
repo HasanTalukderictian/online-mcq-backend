@@ -16,6 +16,52 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
         exams.find((e) => !e.completed) ||
         exams[0];
 
+    // ✅ মোবাইল ডিটেকশন (রেন্ডারে responsive রাখতে)
+    const isMobile = typeof window !== "undefined" && window.innerWidth <= 720;
+
+    // ✅ Grid styles — mobile এ ১ কলাম, বড় স্ক্রিনে auto-fill
+    const subjectsGridStyle = {
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(180px, 1fr))",
+        gap: isMobile ? "10px" : "8px",
+        width: "100%",
+    };
+
+    const examListStyle = {
+        display: "grid",
+        gridTemplateColumns: "1fr",   // ✅ সবসময় ১ কলাম (desktop + mobile)
+        gap: isMobile ? "10px" : "8px",
+        width: "100%",
+    };
+
+    const subjBtnStyle = {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        width: "100%",
+        maxWidth: "100%",
+        minHeight: isMobile ? "56px" : "52px",
+        padding: isMobile ? "14px 16px" : "10px 12px",
+        fontSize: isMobile ? "14.5px" : "13px",
+        textAlign: "left",
+        whiteSpace: "normal",
+        wordBreak: "break-word",
+        overflow: "visible",
+        textOverflow: "clip",
+        boxSizing: "border-box",
+    };
+
+    const examBtnStyle = {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        maxWidth: "100%",
+        padding: isMobile ? "14px 16px" : "12px 14px",
+        boxSizing: "border-box",
+        textAlign: "left",
+    };
+
     const pickSubject = (id) => {
         setSubjectId(id);
         setExamId(null);
@@ -71,28 +117,36 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
 
                     <div className="pick-scroll">
                         <span className="label" id="subjects-label">Subject</span>
-                        <div className="subjects">
+
+                        {/* ✅ Subject grid — inline style দিয়ে force ১ কলাম */}
+                        <div className="subjects" style={subjectsGridStyle}>
                             {list.map((s) => (
                                 <button
                                     key={s.id}
                                     type="button"
                                     className={"subj " + (subj.id === s.id ? "on" : "")}
-                                    style={{ "--c": s.color }}
+                                    style={{ "--c": s.color, ...subjBtnStyle }}
                                     onClick={() => pickSubject(s.id)}
                                 >
-                                    <span>{s.icon}</span>{s.name}
+                                    <span style={{ fontSize: isMobile ? "20px" : "18px", flexShrink: 0, marginRight: "6px" }}>
+                                        {s.icon}
+                                    </span>
+                                    {s.name}
                                 </button>
                             ))}
                         </div>
 
                         <span className="label">Exam</span>
-                        <div className="exam-list">
+
+                        {/* ✅ Exam list — inline style দিয়ে force ১ কলাম */}
+                        <div className="exam-list" style={examListStyle}>
                             {exams.map((e) => (
                                 <button
                                     key={e.id}
                                     type="button"
                                     className={"exam-opt " + (exam.id === e.id && !e.completed ? "on" : "") + (e.completed ? " done" : "")}
                                     disabled={e.completed}
+                                    style={examBtnStyle}
                                     onClick={() => setExamId(e.id)}
                                 >
                                     <b>{e.name}</b>
@@ -144,8 +198,6 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
                 <div className="maint">🛠 {site.maintenance_message || "Exams are closed for now."}</div>
             )}
 
-
-
             {/* 2) Explore subjects */}
             <SubjectShowcase
                 subjects={list}
@@ -155,32 +207,8 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
                 onPick={pickFromShowcase}
             />
 
-            
-
-            
-
             {/* 1) Start your exam */}
             <div className="start" id="exam-section">{body}</div>
-
-            {/* <section className="topics-promo">
-                <div>
-                    <h2>📌 Important Topics</h2>
-                    <p>Subject-wise important topic, previous year question, solution and video: all in one place.</p>
-                </div>
-                <button type="button" className="btn" onClick={() => onTopics(subj ? subj.id : null)}>
-                    Browse topics →
-                </button>
-            </section>
-
-            <section className="topics-promo">
-                <div>
-                    <h2>💼 Job Circulars</h2>
-                    <p>Latest govt, teacher and M.Sc job circulars with end dates and Apply links.</p>
-                </div>
-                <button type="button" className="btn" onClick={onCirculars}>
-                    See circulars →
-                </button>
-            </section> */}
 
             {/* 3) Why choose Online MCQ Test */}
             <Features />
