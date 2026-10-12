@@ -2,17 +2,26 @@ import { useEffect, useState } from "react";
 import { apiRequest, getData } from "../adminpanel/api";
 import "../css/notice.css";
 
-function Item({ n, hidden }) {
+function Item({ n, hidden, isLast }) {
     return (
         <span className="nb-item">
             {n.link_url ? (
-                <a href={n.link_url} target="_blank" rel="noopener noreferrer" tabIndex={hidden ? -1 : undefined}>
+                <a
+                    href={n.link_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    tabIndex={hidden ? -1 : undefined}
+                >
                     {n.text}
                 </a>
             ) : (
                 <span>{n.text}</span>
             )}
-            <i className="nb-sep" aria-hidden="true">●</i>
+            {!isLast && (
+                <i className="nb-sep" aria-hidden="true">
+                    ●
+                </i>
+            )}
         </span>
     );
 }
@@ -28,7 +37,7 @@ function NoticeBar() {
                 const d = getData(b) || {};
                 if (alive && Array.isArray(d.notices)) setItems(d.notices);
             })
-            .catch(() => {}); // a missing notice line must never break the page
+            .catch(() => {});
         return () => {
             alive = false;
         };
@@ -54,14 +63,22 @@ function NoticeBar() {
                         style={{ animationDuration: seconds + "s" }}
                     >
                         <div className="nb-group">
-                            {items.map((n) => (
-                                <Item key={n.id} n={n} />
+                            {items.map((n, i) => (
+                                <Item
+                                    key={n.id}
+                                    n={n}
+                                    isLast={i === items.length - 1}
+                                />
                             ))}
                         </div>
-                        {/* second copy makes the loop seamless; hidden from screen readers */}
                         <div className="nb-group" aria-hidden="true">
-                            {items.map((n) => (
-                                <Item key={"c" + n.id} n={n} hidden />
+                            {items.map((n, i) => (
+                                <Item
+                                    key={"c" + n.id}
+                                    n={n}
+                                    hidden
+                                    isLast={i === items.length - 1}
+                                />
                             ))}
                         </div>
                     </div>
@@ -71,7 +88,9 @@ function NoticeBar() {
                     type="button"
                     className="nb-toggle"
                     onClick={() => setPaused(!paused)}
-                    aria-label={paused ? "Resume scrolling notices" : "Pause scrolling notices"}
+                    aria-label={
+                        paused ? "Resume scrolling notices" : "Pause scrolling notices"
+                    }
                     title={paused ? "Play" : "Pause"}
                 >
                     {paused ? "▶" : "⏸"}

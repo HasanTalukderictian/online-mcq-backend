@@ -15,6 +15,8 @@ import { isAdminUser } from "./components/Auth/roles";
 import "./css/exam.css";
 import TopicsScreen from "./components/TopicsScreen";
 import CircularsScreen from "./components/CircularsScreen";
+import AboutScreen from "./components/AboutScreen";
+import ContactScreen from "./components/ContactScreen";
 
 const SCREEN_KEY = "app_screen_v1";
 const ADMIN_PAGE_KEY = "admin_page_v1"; // same key as in AdminPanel.jsx
@@ -37,7 +39,7 @@ const initialScreen = () => {
     if (saved === "admin" && !(a && isAdminUser(a.user))) return "start";
     if ((saved === "login" || saved === "register") && a) return "start";
 
-    return ["start", "login", "register", "panel", "admin", "topics", "circulars"].includes(saved) ? saved : "start";
+    return ["start", "login", "register", "panel", "admin", "topics", "circulars", "about", "contact"].includes(saved) ? saved : "start";
 };
 
 const DEFAULT_SITE = {
@@ -392,6 +394,9 @@ function App() {
                         <button className="btn" onClick={() => go("login")}>Go to sign in</button>
                     </div>
                 )}
+
+                {screen === "about" && <AboutScreen site={site} onBack={() => go("start")} onContact={() => go("contact")} />}
+                {screen === "contact" && <ContactScreen site={site} onBack={() => go("start")} />}
                 {screen === "quiz" && session && (
                     <QuizScreen
                         questions={session.questions}

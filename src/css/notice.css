@@ -1,3 +1,7 @@
+/* =========================================================
+   NOTICE BAR — aligned with hero/page container
+   ========================================================= */
+
 .nb {
     width: 100%;
     background: var(--card);
@@ -5,16 +9,23 @@
     border-bottom: 1px solid var(--line);
 }
 
+
+/* Inner container — matches hero card width (1100px) */
+
 .nb-in {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 12px;
     height: 46px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     box-sizing: border-box;
 }
+
+
+/* ---------- Notice label badge ---------- */
 
 .nb-label {
     flex: none;
@@ -30,14 +41,20 @@
     white-space: nowrap;
 }
 
+
+/* ---------- Scrolling viewport ---------- */
+
 .nb-view {
     position: relative;
-    flex: 1;
+    flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
-    mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+    -webkit-mask-image: linear-gradient( 90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+    mask-image: linear-gradient( 90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
 }
+
+
+/* ---------- Marquee track ---------- */
 
 .nb-track {
     display: flex;
@@ -52,14 +69,17 @@
 }
 
 
-/* each group is at least as wide as the screen, so the loop never shows a gap */
+/* ---------- Each group = content-width (no gap) ---------- */
 
 .nb-group {
     flex: none;
     display: flex;
     align-items: center;
-    min-width: 100vw;
+    min-width: max-content;
 }
+
+
+/* ---------- Each item ---------- */
 
 .nb-item {
     display: inline-flex;
@@ -80,12 +100,19 @@
     text-decoration: underline;
 }
 
+
+/* ---------- Separator dot ---------- */
+
 .nb-sep {
-    margin: 0 22px;
+    margin: 0 16px;
     font-style: normal;
     font-size: 8px;
     color: var(--muted);
+    flex: none;
 }
+
+
+/* ---------- Scroll animation ---------- */
 
 @keyframes nb-scroll {
     from {
@@ -95,6 +122,9 @@
         transform: translateX(-50%);
     }
 }
+
+
+/* ---------- Pause / Play button ---------- */
 
 .nb-toggle {
     flex: none;
@@ -107,6 +137,10 @@
     font-size: 12px;
     line-height: 1;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .nb-toggle:hover {
@@ -115,9 +149,14 @@
     color: #fff;
 }
 
+
+/* =========================================================
+   RESPONSIVE — mobile
+   ========================================================= */
+
 @media (max-width: 640px) {
     .nb-in {
-        padding: 0 12px;
+        padding: 0 10px;
         height: 44px;
         gap: 8px;
     }
@@ -130,10 +169,20 @@
     .nb-item {
         font-size: 13px;
     }
+    .nb-sep {
+        margin: 0 12px;
+    }
+    .nb-toggle {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+    }
 }
 
 
-/* reduce motion: no scrolling, notices wrap line by line */
+/* =========================================================
+   REDUCED MOTION — no scrolling, wrap line by line
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
     .nb-in {

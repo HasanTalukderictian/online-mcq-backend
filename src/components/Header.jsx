@@ -12,6 +12,9 @@ const labels = {
     detail: "Record details",
     login: "Sign in",
     register: "Sign up",
+    admin: "Admin Dashboard",
+    about: "About",
+    contact: "Contact",
 };
 
 function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
@@ -19,6 +22,9 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
     const inPanel = screen === "panel" || screen === "detail";
     const [open, setOpen] = useState(false);
     const headerRef = useRef(null);
+
+    // ✅ Admin check
+    const isAdmin = !!user && isAdminUser(user);
 
     useEffect(() => { setOpen(false); }, [screen]);
 
@@ -71,7 +77,12 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
     return (
         <header className="site-header" ref={headerRef}>
             <div className="site-header-in">
-                <button type="button" className="logo" onClick={() => go("start")} title="Go to Home">
+                <button
+                    type="button"
+                    className="logo"
+                    onClick={() => go(isAdmin ? "admin" : "start")}
+                    title="Go to Home"
+                >
                     <i>✓</i> <span className="logo-text">{site.site_name}</span>
                 </button>
 
@@ -96,12 +107,17 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                     />
                 )}
 
-                <nav id="mobile-nav" className={"head-right " + (open ? "open" : "")} aria-label="Main">
+                <nav
+                    id="mobile-nav"
+                    className={"head-right " + (open ? "open" : "")}
+                    aria-label="Main"
+                >
                     <div className="menu-scroll">
                         <span className={"status " + (screen === "quiz" ? "live" : "")}>
                             {labels[screen]}
                         </span>
 
+                        {/* ============ EXAM — visible for all ============ */}
                         <button
                             type="button"
                             className={"nav-btn " + (screen === "quiz" ? "on" : "")}
@@ -110,14 +126,7 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                             Exam
                         </button>
 
-                        <button
-                            type="button"
-                            className={"nav-btn " + (screen === "topics" ? "on" : "")}
-                            onClick={() => go("topics")}
-                        >
-                            Topics
-                        </button>
-
+                        {/* ============ CIRCULARS — visible for all ============ */}
                         <button
                             type="button"
                             className={"nav-btn " + (screen === "circulars" ? "on" : "")}
@@ -126,20 +135,51 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                             Circulars
                         </button>
 
+                        {/* ============ STUDENT-ONLY ITEMS (hidden for admin) ============ */}
+                        {!isAdmin && (
+                            <>
+                                <button
+                                    type="button"
+                                    className={"nav-btn " + (screen === "topics" ? "on" : "")}
+                                    onClick={() => go("topics")}
+                                >
+                                    Topics
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={"nav-btn " + (inPanel ? "on" : "")}
+                                    onClick={() => go("panel")}
+                                >
+                                    Student Panel
+                                </button>
+                            </>
+                        )}
+
+                        {/* ============ COMMON PAGES ============ */}
                         <button
                             type="button"
-                            className={"nav-btn " + (inPanel ? "on" : "")}
-                            onClick={() => go("panel")}
+                            className={"nav-btn " + (screen === "about" ? "on" : "")}
+                            onClick={() => go("about")}
                         >
-                            Student Panel
+                            <b>About Us</b>
                         </button>
 
+                        <button
+                            type="button"
+                            className={"nav-btn " + (screen === "contact" ? "on" : "")}
+                            onClick={() => go("contact")}
+                        >
+                            <b>Contact</b>
+                        </button>
+
+                        {/* ============ AUTH AREA ============ */}
                         {user ? (
                             <>
-                                {isAdminUser(user) && (
+                                {isAdmin && (
                                     <button
                                         type="button"
-                                        className="nav-btn"
+                                        className={"nav-btn " + (screen === "admin" ? "on" : "")}
                                         onClick={() => go("admin")}
                                     >
                                         Dashboard
@@ -166,6 +206,7 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                             </button>
                         )}
 
+                        {/* ============ THEME TOGGLE (icon only) ============ */}
                         <button
                             type="button"
                             className="theme-btn"
@@ -173,7 +214,36 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                             aria-label={dark ? "Switch to day mode" : "Switch to night mode"}
                             title={dark ? "Day mode" : "Night mode"}
                         >
-                            {dark ? "Day" : "Night"}
+                            {dark ? (
+                                // ☀️ Sun icon
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="4" />
+                                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                                </svg>
+                            ) : (
+                                // 🌙 Moon icon
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                                </svg>
+                            )}
                         </button>
                     </div>
                 </nav>

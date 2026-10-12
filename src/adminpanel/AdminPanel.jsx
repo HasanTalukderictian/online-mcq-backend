@@ -13,6 +13,9 @@ import "./css/admin-extra.css";
 import Topics from "./Topics";
 import CircularsAdmin from "./CircularsAdmin";
 import NoticesAdmin from "./NoticesAdmin";
+import MessagesAdmin from "./MessagesAdmin";
+import TeamAdmin from "./TeamAdmin";
+import { apiRequest, getData } from "./api";
 
 const MENU = [
     { id: "dashboard", icon: "📊", label: "Dashboard" },
@@ -26,6 +29,8 @@ const MENU = [
     { id: "topics", icon: "📌", label: "Important topics" },
     { id: "circulars", icon: "💼", label: "Job circulars" },
     { id: "notices", icon: "📢", label: "Notices" },
+    { id: "messages", icon: "✉️", label: "Messages" },
+    { id: "team", icon: "🧑‍💻", label: "Team" },
     { id: "settings", icon: "⚙️", label: "Settings" },
 
 ];
@@ -37,7 +42,7 @@ const loadNav = () => {
     try {
         const v = JSON.parse(sessionStorage.getItem(PAGE_KEY));
         if (v && MENU.some((m) => m.id === v.page)) return { page: v.page, params: v.params || {} };
-    } catch {}
+    } catch { }
     return { page: "dashboard", params: {} };
 };
 
@@ -54,6 +59,8 @@ function ComingSoon({ title }) {
 function AdminPanel({ user, token, theme, onToggleTheme, onLogout, onExit, onUserUpdate }) {
     const [nav, setNav] = useState(loadNav); // { page, params }
     const [open, setOpen] = useState(false);
+    const [unread, setUnread] = useState(0);
+
 
     const page = nav.page;
     const params = nav.params || {};
@@ -64,8 +71,24 @@ function AdminPanel({ user, token, theme, onToggleTheme, onLogout, onExit, onUse
     const initial = (u.name ? u.name : "A").charAt(0).toUpperCase();
 
     useEffect(() => {
-        try { sessionStorage.setItem(PAGE_KEY, JSON.stringify(nav)); } catch {}
+        try { sessionStorage.setItem(PAGE_KEY, JSON.stringify(nav)); } catch { }
     }, [nav]);
+
+
+
+    // unread contact messages for the menu badge
+    useEffect(() => {
+        let alive = true;
+        apiRequest("/contact-messages/unread-count", { token: token })
+            .then((b) => {
+                const d = getData(b) || {};
+                if (alive) setUnread(d.unread || 0);
+            })
+            .catch(() => { });
+        return () => {
+            alive = false;
+        };
+    }, [page, token]);
 
     // go to a page, optionally with a filter (e.g. choose("exams", { subject_id: 3 }))
     const choose = (id, p) => {
@@ -87,6 +110,8 @@ function AdminPanel({ user, token, theme, onToggleTheme, onLogout, onExit, onUse
     else if (page === "results") content = <Results token={token} onUnauthorized={onLogout} />;
     else if (page === "topics") content = <Topics {...common} />;
     else if (page === "circulars") content = <CircularsAdmin token={token} onUnauthorized={onLogout} />;
+    else if (page === "messages") content = <MessagesAdmin token={token} onUnauthorized={onLogout} onUnreadChange={setUnread} />;
+    else if (page === "team") content = <TeamAdmin token={token} onUnauthorized={onLogout} />;
     else if (page === "notices") content = <NoticesAdmin token={token} onUnauthorized={onLogout} />;
     else if (page === "settings") content = <Settings token={token} user={u} onUnauthorized={onLogout} onUserUpdate={onUserUpdate} />;
     else content = <ComingSoon title={current.label} />;
@@ -101,8 +126,13 @@ function AdminPanel({ user, token, theme, onToggleTheme, onLogout, onExit, onUse
                     {MENU.map((m) => (
                         <button key={m.id} type="button" className={page === m.id ? "on" : ""} onClick={() => choose(m.id)}>
                             <span>{m.icon}</span> {m.label}
+                            {m.id === "messages" && unread > 0 && <em className="adm-badge">{unread}</em>}
                         </button>
+
+
                     ))}
+
+
                 </nav>
 
                 <div className="adm-side-foot">

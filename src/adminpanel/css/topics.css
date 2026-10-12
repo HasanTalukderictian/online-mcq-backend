@@ -1,0 +1,57 @@
+/* messages + team (admin) */
+
+.tp-msg {
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+    margin-bottom: 14px;
+}
+
+.tp-person {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tp-person img,
+.tp-person span {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex: none;
+    object-fit: cover;
+}
+
+.tp-person span {
+    display: grid;
+    place-items: center;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.adm-badge {
+    margin-left: auto;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--bad);
+    color: #fff;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 800;
+    display: inline-grid;
+    place-items: center;
+}
+
+a.btn {
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+}
