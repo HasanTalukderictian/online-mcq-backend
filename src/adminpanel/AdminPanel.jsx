@@ -12,6 +12,7 @@ import "./css/admin.css";
 import "./css/admin-extra.css";
 import Topics from "./Topics";
 import CircularsAdmin from "./CircularsAdmin";
+import NoticesAdmin from "./NoticesAdmin";
 
 const MENU = [
     { id: "dashboard", icon: "📊", label: "Dashboard" },
@@ -24,6 +25,7 @@ const MENU = [
     { id: "results", icon: "🏆", label: "Results" },
     { id: "topics", icon: "📌", label: "Important topics" },
     { id: "circulars", icon: "💼", label: "Job circulars" },
+    { id: "notices", icon: "📢", label: "Notices" },
     { id: "settings", icon: "⚙️", label: "Settings" },
 
 ];
@@ -85,6 +87,7 @@ function AdminPanel({ user, token, theme, onToggleTheme, onLogout, onExit, onUse
     else if (page === "results") content = <Results token={token} onUnauthorized={onLogout} />;
     else if (page === "topics") content = <Topics {...common} />;
     else if (page === "circulars") content = <CircularsAdmin token={token} onUnauthorized={onLogout} />;
+    else if (page === "notices") content = <NoticesAdmin token={token} onUnauthorized={onLogout} />;
     else if (page === "settings") content = <Settings token={token} user={u} onUnauthorized={onLogout} onUserUpdate={onUserUpdate} />;
     else content = <ComingSoon title={current.label} />;
 

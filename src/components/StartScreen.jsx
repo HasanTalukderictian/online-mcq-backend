@@ -3,6 +3,7 @@ import Hero from "./Hero";
 import SubjectShowcase from "./SubjectShowcase";
 import Features from "./Features";
 import { fmtTime } from "../adminpanel/ui";
+import NoticeBar from "./NoticeBar";
 
 function StartScreen({ catalog, user, site, onStart, starting, startError, onLogin, onRetry, onTopics, onCirculars }) {
     const [subjectId, setSubjectId] = useState(null);
@@ -193,6 +194,12 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
     return (
         <>
             <Hero stats={catalog.stats} loading={catalog.loading} site={site} />
+
+            <NoticeBar />
+
+            {site.maintenance_mode && (
+                <div className="maint">🛠 {site.maintenance_message || "Exams are closed for now."}</div>
+            )}
 
             {site.maintenance_mode && (
                 <div className="maint">🛠 {site.maintenance_message || "Exams are closed for now."}</div>

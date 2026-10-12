@@ -1,0 +1,167 @@
+.nb {
+    width: 100%;
+    background: var(--card);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.nb-in {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+}
+
+.nb-label {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.nb-view {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+}
+
+.nb-track {
+    display: flex;
+    width: max-content;
+    animation: nb-scroll linear infinite;
+}
+
+.nb-view:hover .nb-track,
+.nb-view:focus-within .nb-track,
+.nb-track.paused {
+    animation-play-state: paused;
+}
+
+
+/* each group is at least as wide as the screen, so the loop never shows a gap */
+
+.nb-group {
+    flex: none;
+    display: flex;
+    align-items: center;
+    min-width: 100vw;
+}
+
+.nb-item {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.nb-item a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.nb-item a:hover,
+.nb-item a:focus-visible {
+    text-decoration: underline;
+}
+
+.nb-sep {
+    margin: 0 22px;
+    font-style: normal;
+    font-size: 8px;
+    color: var(--muted);
+}
+
+@keyframes nb-scroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.nb-toggle {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.nb-toggle:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+@media (max-width: 640px) {
+    .nb-in {
+        padding: 0 12px;
+        height: 44px;
+        gap: 8px;
+    }
+    .nb-label b {
+        display: none;
+    }
+    .nb-label {
+        padding: 7px 10px;
+    }
+    .nb-item {
+        font-size: 13px;
+    }
+}
+
+
+/* reduce motion: no scrolling, notices wrap line by line */
+
+@media (prefers-reduced-motion: reduce) {
+    .nb-in {
+        height: auto;
+        min-height: 46px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        align-items: flex-start;
+    }
+    .nb-view {
+        overflow: visible;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+    .nb-track {
+        animation: none;
+        width: auto;
+    }
+    .nb-group {
+        min-width: 0;
+        flex-wrap: wrap;
+        row-gap: 4px;
+    }
+    .nb-group[aria-hidden="true"],
+    .nb-toggle {
+        display: none;
+    }
+    .nb-item {
+        white-space: normal;
+    }
+}
