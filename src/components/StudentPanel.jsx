@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiRequest, pickList } from "../adminpanel/api";
+import EfficiencyChart from "./EfficiencyChart";   // ✅ NEW
 
 const fmtT = (s) => Math.floor(s / 60) + "m " + (s % 60) + "s";
 const fmtD = (iso) => {
@@ -82,6 +83,16 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
     const best = n ? Math.max(...list.map((r) => r.percent)) : 0;
     const passRate = n ? Math.round((list.filter((r) => r.passed).length / n) * 100) : 0;
 
+    // ✅ NEW: chart data (last 10 exam, purono theke notun)
+    const chartData = [...list]
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(-10)
+        .map((r, i, arr) => ({
+            label: "Ex " + (n - arr.length + i + 1),
+            value: r.percent,
+            title: r.subject + " · " + r.exam,
+        }));
+
     const bySubject = Object.values(
         list.reduce((m, r) => {
             const x = m[r.subject] || (m[r.subject] = { name: r.subject, icon: r.icon, color: r.color, n: 0, sum: 0 });
@@ -112,6 +123,9 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
                 <div><b style={{ color: "var(--ok)" }}>{best}%</b><small>Best score</small></div>
                 <div><b>{passRate}%</b><small>Pass rate</small></div>
             </div>
+
+            {/* ✅ NEW: Efficiency chart */}
+            {chartData.length > 0 && <EfficiencyChart data={chartData} threshold={60} />}
 
             {bySubject.length > 0 && (
                 <div className="panel" style={{ marginBottom: 20 }}>

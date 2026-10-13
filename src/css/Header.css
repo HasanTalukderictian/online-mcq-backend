@@ -1,453 +1,368 @@
-/* ============================================================
-   Site Header — responsive (FINAL)
-   ============================================================ */
+/* =========================================================
+   Header.css  (Desktop: 961px+ | Mobile drawer: up to 960px)
+   Colors tomar theme variable theke ashbe, na thakle fallback
+   ========================================================= */
 
 .site-header {
-    --header-h: 62px;
+    --h-bg: var(--panel, #ffffff);
+    --h-line: var(--line, #e5e7eb);
+    --h-text: var(--text, #1f2937);
+    --h-primary: var(--primary, #3347d6);
+    --h-primary-soft: var(--primary-soft, #eceffd);
+    --h-hover: rgba(127, 127, 127, 0.1);
     position: sticky;
     top: 0;
-    z-index: 200;
-    background: var(--card);
-    border-bottom: 1px solid var(--line);
+    z-index: 100;
+    width: 100%;
+    background: var(--h-bg);
+    border-bottom: 1px solid var(--h-line);
+    box-sizing: border-box;
+}
+
+.site-header *,
+.site-header *::before,
+.site-header *::after {
+    box-sizing: border-box;
 }
 
 .site-header-in {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 12px 20px;
-    min-height: var(--header-h);
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: nowrap;
     gap: 16px;
-    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 24px;
 }
 
 
 /* ---------- Logo ---------- */
 
-.logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
-    border: 0;
-    background: none;
-    color: var(--ink);
-    font: inherit;
-    font-weight: 800;
-    font-size: 16px;
-    cursor: pointer;
-    white-space: nowrap;
-    min-width: 0;
-    max-width: 60%;
-    overflow: hidden;
-}
-
-.logo i {
-    display: inline-grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-    background: var(--primary);
-    color: #fff;
-    font-style: normal;
-    font-weight: 900;
-    flex-shrink: 0;
-}
-
-.logo-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-
-/* ---------- Right side nav (desktop) ---------- */
-
-.head-right {
+.site-header .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    gap: 10px;
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: 0;
+    color: var(--h-text);
+    font: inherit;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+    cursor: pointer;
 }
 
-.status {
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 700;
+.site-header .logo i {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--h-primary);
+    color: #fff;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.site-header .logo-text {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 240px;
+}
+
+
+/* ---------- Nav (desktop) ---------- */
+
+.site-header .head-right {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.site-header .menu-scroll {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.site-header .nav-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    background: var(--h-bg);
+    border: 1px solid var(--h-line);
     border-radius: 999px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    color: var(--muted);
+    color: var(--h-text);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.site-header .nav-btn b {
+    font-weight: 600;
+}
+
+.site-header .nav-btn:hover {
+    background: var(--h-hover);
+}
+
+.site-header .nav-btn.on {
+    background: var(--h-primary-soft);
+    border-color: var(--h-primary);
+    color: var(--h-primary);
+}
+
+
+/* ---------- Status pill ---------- */
+
+.site-header .status {
+    flex: 0 0 auto;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--h-primary-soft);
+    color: var(--h-primary);
+    font-size: 13px;
+    font-weight: 700;
     white-space: nowrap;
 }
 
-.status.live {
+.site-header .status.live {
     background: #fee2e2;
-    border-color: #ef4444;
-    color: #991b1b;
-    animation: pulse 1.6s infinite;
+    color: #b91c1c;
+    animation: hdrPulse 1.6s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes hdrPulse {
     0%,
     100% {
         opacity: 1;
     }
     50% {
-        opacity: .65;
+        opacity: 0.6;
     }
 }
 
-.nav-btn,
-.theme-btn {
-    padding: 8px 14px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--paper);
-    color: var(--ink);
-    font: inherit;
-    font-size: 14px;
-    font-weight: 700;
+
+/* ---------- Theme button ---------- */
+
+.site-header .theme-btn {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: var(--h-bg);
+    border: 1px solid var(--h-line);
+    border-radius: 50%;
+    color: var(--h-text);
     cursor: pointer;
-    white-space: nowrap;
-    transition: background .15s, border-color .15s, color .15s, transform .15s;
+    transition: background 0.15s ease;
 }
 
-.nav-btn:hover,
-.theme-btn:hover {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: #fff;
-    transform: translateY(-1px);
-}
-
-.nav-btn.on {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: #fff;
-}
-
-.user-chip {
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    font-size: 13px;
-    color: var(--ink);
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.site-header .theme-btn:hover {
+    background: var(--h-hover);
 }
 
 
-/* ---------- Hamburger (hidden on desktop) ---------- */
+/* ---------- Hamburger (desktop e hidden) ---------- */
 
-.menu-btn {
+.site-header .menu-btn {
     display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
+    flex: 0 0 auto;
+    position: relative;
     width: 40px;
     height: 40px;
     padding: 0;
-    border: 1px solid var(--line);
+    background: var(--h-bg);
+    border: 1px solid var(--h-line);
     border-radius: 10px;
-    background: var(--paper);
     cursor: pointer;
-    flex-shrink: 0;
-    z-index: 320;
-    position: relative;
 }
 
-.menu-btn span {
-    display: block;
-    width: 18px;
+.site-header .menu-btn span {
+    position: absolute;
+    left: 10px;
+    right: 10px;
     height: 2px;
-    background: var(--ink);
     border-radius: 2px;
-    transition: transform .2s, opacity .2s;
+    background: var(--h-text);
+    transition: transform 0.2s ease, opacity 0.2s ease, top 0.2s ease;
 }
 
-.menu-btn.on span:nth-child(1) {
-    transform: translateY(6px) rotate(45deg);
+.site-header .menu-btn span:nth-child(1) {
+    top: 13px;
 }
 
-.menu-btn.on span:nth-child(2) {
+.site-header .menu-btn span:nth-child(2) {
+    top: 19px;
+}
+
+.site-header .menu-btn span:nth-child(3) {
+    top: 25px;
+}
+
+.site-header .menu-btn.on span:nth-child(1) {
+    top: 19px;
+    transform: rotate(45deg);
+}
+
+.site-header .menu-btn.on span:nth-child(2) {
     opacity: 0;
 }
 
-.menu-btn.on span:nth-child(3) {
-    transform: translateY(-6px) rotate(-45deg);
+.site-header .menu-btn.on span:nth-child(3) {
+    top: 19px;
+    transform: rotate(-45deg);
 }
 
-.menu-backdrop {
+.site-header .menu-backdrop {
     display: none;
 }
 
-.menu-scroll {
-    display: contents;
+
+/* ---------- Focus ---------- */
+
+.site-header .logo:focus-visible,
+.site-header .nav-btn:focus-visible,
+.site-header .theme-btn:focus-visible,
+.site-header .menu-btn:focus-visible {
+    outline: 2px solid var(--h-primary);
+    outline-offset: 2px;
 }
 
 
-/* ============================================================
-   Narrow desktop / big tablet (<= 1100px)
-   ============================================================ */
+/* =========================================================
+   DESKTOP: current page er naam pill (non-live) lukano
+   (live exam er "Exam in progress" pill thakbe)
+   Pill ta rakhte chaile ei block ta delete koro
+   ========================================================= */
 
-@media (max-width: 1100px) {
-    .site-header-in {
-        padding: 10px 14px;
-        gap: 10px;
-    }
-    .head-right {
-        gap: 6px;
-    }
-    .nav-btn,
-    .theme-btn {
-        padding: 7px 11px;
-        font-size: 13px;
-    }
-    .user-chip {
-        max-width: 120px;
-    }
-    .status {
+@media (min-width: 961px) {
+    .site-header .status:not(.live) {
         display: none;
     }
 }
 
 
-/* ============================================================
-   Mobile (<= 960px) — auto-height drawer + hover colors
-   ============================================================ */
+/* Chhoto laptop: ektu compact */
+
+@media (min-width: 961px) and (max-width: 1180px) {
+    .site-header-in {
+        padding: 10px 16px;
+        gap: 12px;
+    }
+    .site-header .nav-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    .site-header .logo-text {
+        max-width: 160px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE / TABLET: slide-in drawer
+   ========================================================= */
 
 @media (max-width: 960px) {
     .site-header-in {
-        padding-left: max(14px, env(safe-area-inset-left));
-        padding-right: max(14px, env(safe-area-inset-right));
-        gap: 10px;
+        padding: 10px 16px;
     }
-    .menu-btn {
-        display: flex;
+    .site-header .logo-text {
+        max-width: 200px;
     }
-    .logo {
-        font-size: 15px;
-        max-width: calc(100% - 56px);
+    .site-header .menu-btn {
+        display: block;
     }
-    /* ---------- Backdrop ---------- */
-    .menu-backdrop {
+    .site-header .menu-backdrop {
         display: block;
         position: fixed;
-        top: var(--header-h);
+        top: var(--header-h, 60px);
+        left: 0;
         right: 0;
         bottom: 0;
-        left: 0;
-        background: rgba(0, 0, 0, .45);
-        z-index: 210;
-        animation: menuFade .2s ease;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 98;
     }
-    @keyframes menuFade {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-    /* ---------- Drawer — content অনুযায়ী height ---------- */
-    .head-right {
-        position: fixed;
-        top: var(--header-h);
-        right: 0;
-        left: auto;
-        bottom: auto;
-        /* ✅ full height না */
-        width: min(320px, 85vw);
-        max-height: calc(100vh - var(--header-h) - 12px);
-        /* ✅ বেশি হলে scroll */
-        max-height: calc(100dvh - var(--header-h) - 12px);
-        display: flex;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        align-items: stretch;
-        justify-content: flex-start;
-        gap: 0;
-        padding: 0;
-        background: var(--card, #ffffff);
-        border-left: 1px solid var(--line, #e5e7eb);
-        border-top: 1px solid var(--line, #e5e7eb);
-        border-bottom: 1px solid var(--line, #e5e7eb);
-        border-radius: 0 0 0 14px;
-        /* ✅ নিচে-বাম corner rounded */
-        box-shadow: -8px 12px 28px rgba(0, 0, 0, .15);
-        overflow: hidden;
-        z-index: 310;
-        transform: translateX(100%);
-        visibility: hidden;
-        transition: transform .25s ease, visibility 0s linear .25s;
+    .site-header {
+        --h-bg: var(--card, #ffffff);
+        --h-line: var(--line, #e5e7eb);
+        --h-text: var(--ink, #1f2937);
+        --h-primary: var(--primary, #3347d6);
+        --h-primary-soft: color-mix(in srgb, var(--h-primary) 14%, var(--h-bg));
+        --h-hover: rgba(127, 127, 127, 0.14);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        width: 100%;
+        background: var(--h-bg);
+        border-bottom: 1px solid var(--h-line);
         box-sizing: border-box;
     }
-    .head-right.open {
+    .site-header .head-right.open {
         transform: translateX(0);
         visibility: visible;
-        transition: transform .25s ease, visibility 0s;
     }
-    /* ---------- Scroll wrapper ---------- */
-    .menu-scroll {
-        display: flex;
+    .site-header .menu-scroll {
         flex-direction: column;
-        flex: 0 1 auto;
-        /* ✅ content-এর বেশি না */
-        min-height: 0;
-        max-height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        gap: 10px;
-        padding: 16px 18px calc(18px + env(safe-area-inset-bottom));
-    }
-    /* status pill */
-    .head-right .status {
-        display: block;
-        align-self: stretch;
-        width: 100%;
-        box-sizing: border-box;
-        margin: 0 0 4px;
-        padding: 10px 12px;
-        text-align: center;
-        font-size: 12.5px;
-        background: var(--paper, #f3f4f6);
-        color: var(--muted, #6b7280);
-        border: 1px solid var(--line, #e5e7eb);
-    }
-    /* ---------- Menu buttons ---------- */
-    .head-right .nav-btn,
-    .head-right .theme-btn {
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
-        text-align: center;
-        padding: 14px 18px;
-        font-size: 15px;
-        font-weight: 700;
-        margin: 0;
-        flex: 0 0 auto;
-        line-height: 1.2;
-        border-radius: 10px;
-        background: var(--paper, #f3f4f6);
-        color: var(--ink, #111827);
-        border: 1px solid var(--line, #e5e7eb);
-        transition: background .15s, border-color .15s, color .15s, transform .15s;
-    }
-    /* ✅ Hover — primary color (mobile-এ tap করলেও দেখা যাবে) */
-    .head-right .nav-btn:hover,
-    .head-right .nav-btn:focus-visible,
-    .head-right .theme-btn:hover,
-    .head-right .theme-btn:focus-visible {
-        background: var(--primary, #6366f1);
-        border-color: var(--primary, #6366f1);
-        color: #ffffff;
-        transform: translateY(-1px);
-    }
-    /* Active / selected */
-    .head-right .nav-btn.on {
-        background: var(--primary, #6366f1);
-        border-color: var(--primary, #6366f1);
-        color: #ffffff;
-    }
-    .head-right .nav-btn.on:hover,
-    .head-right .nav-btn.on:focus-visible {
-        background: var(--primary, #6366f1);
-        border-color: var(--primary, #6366f1);
-        color: #ffffff;
-    }
-    /* user chip */
-    .head-right .user-chip {
-        display: block;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        text-align: center;
-        padding: 12px 16px;
-        font-size: 14px;
-        background: var(--paper, #f3f4f6);
-        color: var(--ink, #111827);
-        border: 1px solid var(--line, #e5e7eb);
-        border-radius: 10px;
-        margin: 2px 0;
-    }
-    /* <b> ট্যাগ inherit করবে */
-    .head-right .nav-btn b,
-    .head-right .theme-btn b,
-    .head-right .user-chip b {
-        color: inherit;
-        font-weight: 700;
-    }
-}
-
-
-/* ============================================================
-   Small phone (<= 400px)
-   ============================================================ */
-
-@media (max-width: 400px) {
-    .site-header {
-        --header-h: 56px;
-    }
-    .site-header-in {
-        padding-left: max(10px, env(safe-area-inset-left));
-        padding-right: max(10px, env(safe-area-inset-right));
-    }
-    .logo {
-        font-size: 14px;
-        padding: 4px 6px;
-    }
-    .logo i {
-        width: 22px;
-        height: 22px;
-        font-size: 12px;
-    }
-    .menu-btn {
-        width: 36px;
-        height: 36px;
-    }
-    .head-right {
-        width: 92vw;
-    }
-    .menu-scroll {
+        align-items: stretch;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
         gap: 8px;
-        padding: 14px 14px calc(16px + env(safe-area-inset-bottom));
+        height: 100%;
+        padding: 16px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
-    .head-right .nav-btn,
-    .head-right .theme-btn {
+    .site-header .nav-btn {
+        width: 100%;
+        justify-content: flex-start;
         padding: 12px 16px;
-        font-size: 14.5px;
+        font-size: 15px;
+        border-radius: 12px;
     }
-    .head-right .user-chip {
-        padding: 10px 14px;
-        font-size: 13.5px;
+    .site-header .status {
+        text-align: center;
+        border-radius: 12px;
+    }
+    .site-header .theme-btn {
+        align-self: flex-start;
+        width: 42px;
+        height: 42px;
+        margin-top: 4px;
     }
 }
 
-
-/* ============================================================
-   Reduced motion
-   ============================================================ */
+@media (max-width: 420px) {
+    .site-header .logo-text {
+        max-width: 150px;
+        font-size: 16px;
+    }
+}
 
 @media (prefers-reduced-motion: reduce) {
-    .head-right,
-    .head-right.open,
-    .menu-btn span {
+    .site-header .head-right,
+    .site-header .menu-btn span {
         transition: none;
     }
-    .menu-backdrop,
-    .status.live {
+    .site-header .status.live {
         animation: none;
     }
 }

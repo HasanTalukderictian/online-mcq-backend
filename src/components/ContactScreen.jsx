@@ -62,7 +62,7 @@ function ContactScreen({ site, onBack }) {
 
             <header className="pg-head-center">
                 <span className="eyebrow">Get in touch</span>
-                <h1>✉️ Contact us</h1>
+                <h1>Contact us</h1>
                 <p>Have a question, a suggestion or a problem? Send us a message and we will reply as soon as we can.</p>
             </header>
 
