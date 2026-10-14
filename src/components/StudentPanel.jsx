@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiRequest, pickList } from "../adminpanel/api";
-import EfficiencyChart from "./EfficiencyChart";   // ✅ NEW
+import EfficiencyChart from "./EfficiencyChart";
 
 const fmtT = (s) => Math.floor(s / 60) + "m " + (s % 60) + "s";
 const fmtD = (iso) => {
@@ -11,6 +11,9 @@ const fmtD = (iso) => {
         d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
     );
 };
+
+// Backend er field name onujayi fallback deya ache
+const getStudentId = (u) => u?.student_id ?? u?.studentId ?? u?.id ?? "";
 
 function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized }) {
     const [records, setRecords] = useState([]);
@@ -83,7 +86,7 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
     const best = n ? Math.max(...list.map((r) => r.percent)) : 0;
     const passRate = n ? Math.round((list.filter((r) => r.passed).length / n) * 100) : 0;
 
-    // ✅ NEW: chart data (last 10 exam, purono theke notun)
+    // Chart data (last 10 exam, purono theke notun)
     const chartData = [...list]
         .sort((a, b) => new Date(a.date) - new Date(b.date))
         .slice(-10)
@@ -107,7 +110,12 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
             <div className="sp-head">
                 <div>
                     <h1>Student Panel</h1>
-                    <p className="sub" style={{ margin: 0 }}>Results of {user.name}</p>
+                    <p className="sub" style={{ margin: 0 }}>
+                        Results of <b>{user.name}</b>
+                    </p>
+                    <p className="sub" style={{marginTop: 4}}>
+                       Student ID:   {getStudentId(user)}
+                    </p>
                 </div>
                 <div className="sp-filters">
                     <select className="field" value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Subject">
@@ -124,7 +132,6 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
                 <div><b>{passRate}%</b><small>Pass rate</small></div>
             </div>
 
-            {/* ✅ NEW: Efficiency chart */}
             {chartData.length > 0 && <EfficiencyChart data={chartData} threshold={60} />}
 
             {bySubject.length > 0 && (
