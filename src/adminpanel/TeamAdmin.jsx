@@ -279,16 +279,45 @@ function TeamAdmin({ token, onUnauthorized }) {
                                     <tr key={m.id}>
                                         <td>{m.sort_order}</td>
                                         <td>
-                                            <div className="tp-person">
+                                            <div
+                                                className="tp-person"
+                                                style={{ display: "flex", alignItems: "center", gap: 10 }}
+                                            >
                                                 {m.photo_full_url || m.photo_url ? (
                                                     <img
                                                         src={m.photo_full_url || m.photo_url}
                                                         alt=""
                                                         loading="lazy"
                                                         referrerPolicy="no-referrer"
+                                                        style={{
+                                                            width: 40,
+                                                            height: 40,
+                                                            minWidth: 40,
+                                                            maxWidth: 40,
+                                                            borderRadius: "50%",
+                                                            objectFit: "cover",
+                                                            objectPosition: "center top",
+                                                            flex: "none",
+                                                        }}
                                                     />
                                                 ) : (
-                                                    <span>{initials(m.name)}</span>
+                                                    <span
+                                                        style={{
+                                                            width: 40,
+                                                            height: 40,
+                                                            minWidth: 40,
+                                                            borderRadius: "50%",
+                                                            flex: "none",
+                                                            display: "grid",
+                                                            placeItems: "center",
+                                                            background: "var(--primary)",
+                                                            color: "#fff",
+                                                            fontSize: 13,
+                                                            fontWeight: 800,
+                                                        }}
+                                                    >
+                                                        {initials(m.name)}
+                                                    </span>
                                                 )}
                                                 <b>{m.name}</b>
                                             </div>

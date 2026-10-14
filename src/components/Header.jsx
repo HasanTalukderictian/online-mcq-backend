@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { isAdminUser } from "./Auth/roles";
 import '../css/Header.css';
 
@@ -17,13 +18,26 @@ const labels = {
     contact: "Contact",
 };
 
+const themeIcon = (dark, size = 18) =>
+    dark ? (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+    ) : (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+    );
+
 function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
     const dark = theme === "dark";
     const inPanel = screen === "panel" || screen === "detail";
     const [open, setOpen] = useState(false);
     const headerRef = useRef(null);
 
-    // ✅ Admin check
     const isAdmin = !!user && isAdminUser(user);
 
     useEffect(() => { setOpen(false); }, [screen]);
@@ -74,6 +88,92 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
         onNav(target);
     };
 
+    // Menu items (desktop + mobile drawer duto-i ekhan theke ashe)
+    const items = [
+        { key: "start",     label: "Home",          icon: "🏠", target: "start",     on: screen === "start",     show: !isAdmin, desk: false },
+        { key: "exam",      label: "Exam",          icon: "📝", target: "exam",      on: screen === "quiz",      show: true,     desk: true },
+        { key: "circulars", label: "Circulars",     icon: "💼", target: "circulars", on: screen === "circulars", show: true,     desk: true },
+        { key: "topics",    label: "Topics",        icon: "📌", target: "topics",    on: screen === "topics",    show: !isAdmin, desk: true },
+        { key: "panel",     label: "Student Panel", icon: "📊", target: "panel",     on: inPanel,                show: !isAdmin, desk: true },
+        { key: "about",     label: "About Us",      icon: "ℹ️", target: "about",     on: screen === "about",     show: true,     desk: true },
+        { key: "contact",   label: "Contact",       icon: "✉️", target: "contact",   on: screen === "contact",   show: true,     desk: true },
+        { key: "admin",     label: "Dashboard",     icon: "🛠️", target: "admin",     on: screen === "admin",     show: isAdmin,  desk: true },
+        { key: "login",     label: "Login",         icon: "🔑", target: "login",     on: screen === "login",     show: !user,    desk: true },
+    ].filter((i) => i.show);
+
+    const doLogout = () => {
+        setOpen(false);
+        onLogout();
+    };
+
+    // ===== Mobile drawer (admin sidebar er moto) =====
+    const drawer = (
+        <>
+            <div
+                className={"mnav-bg " + (open ? "show" : "")}
+                onClick={() => setOpen(false)}
+                aria-hidden="true"
+            />
+
+            <aside
+                id="mobile-nav"
+                className={"mnav " + (open ? "open" : "")}
+                aria-label="Main"
+                aria-hidden={!open}
+            >
+                <div className="mnav-top">
+                    <div className="mnav-logo">
+                        <i>✓</i>
+                        <span>{site.site_name}</span>
+                    </div>
+                    <button type="button" className="mnav-x" onClick={() => setOpen(false)} aria-label="Close menu">
+                        ✕
+                    </button>
+                </div>
+
+                <nav className="mnav-list">
+                    {items.map((i) => (
+                        <button
+                            key={i.key}
+                            type="button"
+                            className={"mnav-item " + (i.on ? "on" : "")}
+                            onClick={() => go(i.target)}
+                        >
+                            <span className="mnav-ico">{i.icon}</span>
+                            {i.label}
+                        </button>
+                    ))}
+                </nav>
+
+                <div className="mnav-foot">
+                    {user && (
+                        <div className="mnav-user">
+                            <div className="mnav-av">
+                                {String(user.name || "?").trim().charAt(0).toUpperCase()}
+                            </div>
+                            <div className="mnav-who">
+                                <b>{user.name}</b>
+                                <small>{isAdmin ? "Admin" : "Student"}</small>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mnav-acts">
+                        <button type="button" className="mnav-act" onClick={onToggleTheme}>
+                            {themeIcon(dark, 16)}
+                            {dark ? "Day mode" : "Night mode"}
+                        </button>
+                        {user && (
+                            <button type="button" className="mnav-act" onClick={doLogout}>
+                                🚪 Logout
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </aside>
+        </>
+    );
+
     return (
         <header className="site-header" ref={headerRef}>
             <div className="site-header-in">
@@ -99,114 +199,30 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                     <span></span>
                 </button>
 
-                {open && (
-                    <div
-                        className="menu-backdrop"
-                        onClick={() => setOpen(false)}
-                        aria-hidden="true"
-                    />
-                )}
-
-                <nav
-                    id="mobile-nav"
-                    className={"head-right " + (open ? "open" : "")}
-                    aria-label="Main"
-                >
+                {/* ===== Desktop nav ===== */}
+                <nav className="head-right" aria-label="Main">
                     <div className="menu-scroll">
                         <span className={"status " + (screen === "quiz" ? "live" : "")}>
                             {labels[screen]}
                         </span>
 
-                        {/* ============ EXAM — visible for all ============ */}
-                        <button
-                            type="button"
-                            className={"nav-btn " + (screen === "quiz" ? "on" : "")}
-                            onClick={() => go("exam")}
-                        >
-                            Exam
-                        </button>
-
-                        {/* ============ CIRCULARS — visible for all ============ */}
-                        <button
-                            type="button"
-                            className={"nav-btn " + (screen === "circulars" ? "on" : "")}
-                            onClick={() => go("circulars")}
-                        >
-                            Circulars
-                        </button>
-
-                        {/* ============ STUDENT-ONLY ITEMS (hidden for admin) ============ */}
-                        {!isAdmin && (
-                            <>
-                                <button
-                                    type="button"
-                                    className={"nav-btn " + (screen === "topics" ? "on" : "")}
-                                    onClick={() => go("topics")}
-                                >
-                                    Topics
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className={"nav-btn " + (inPanel ? "on" : "")}
-                                    onClick={() => go("panel")}
-                                >
-                                    Student Panel
-                                </button>
-                            </>
-                        )}
-
-                        {/* ============ COMMON PAGES ============ */}
-                        <button
-                            type="button"
-                            className={"nav-btn " + (screen === "about" ? "on" : "")}
-                            onClick={() => go("about")}
-                        >
-                            <b>About Us</b>
-                        </button>
-
-                        <button
-                            type="button"
-                            className={"nav-btn " + (screen === "contact" ? "on" : "")}
-                            onClick={() => go("contact")}
-                        >
-                            <b>Contact</b>
-                        </button>
-
-                        {/* ============ AUTH AREA ============ */}
-                        {user ? (
-                            <>
-                                {isAdmin && (
-                                    <button
-                                        type="button"
-                                        className={"nav-btn " + (screen === "admin" ? "on" : "")}
-                                        onClick={() => go("admin")}
-                                    >
-                                        Dashboard
-                                    </button>
-                                )}
-                                <button
-                                    type="button"
-                                    className="nav-btn"
-                                    onClick={() => {
-                                        setOpen(false);
-                                        onLogout();
-                                    }}
-                                >
-                                    Logout
-                                </button>
-                            </>
-                        ) : (
+                        {items.filter((i) => i.desk).map((i) => (
                             <button
+                                key={i.key}
                                 type="button"
-                                className={"nav-btn " + (screen === "login" ? "on" : "")}
-                                onClick={() => go("login")}
+                                className={"nav-btn " + (i.on ? "on" : "")}
+                                onClick={() => go(i.target)}
                             >
-                                Login
+                                {i.label}
+                            </button>
+                        ))}
+
+                        {user && (
+                            <button type="button" className="nav-btn" onClick={doLogout}>
+                                Logout
                             </button>
                         )}
 
-                        {/* ============ THEME TOGGLE (icon only) ============ */}
                         <button
                             type="button"
                             className="theme-btn"
@@ -214,40 +230,14 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                             aria-label={dark ? "Switch to day mode" : "Switch to night mode"}
                             title={dark ? "Day mode" : "Night mode"}
                         >
-                            {dark ? (
-                                // ☀️ Sun icon
-                                <svg
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <circle cx="12" cy="12" r="4" />
-                                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-                                </svg>
-                            ) : (
-                                // 🌙 Moon icon
-                                <svg
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                                </svg>
-                            )}
+                            {themeIcon(dark)}
                         </button>
                     </div>
                 </nav>
             </div>
+
+            {/* Drawer ta body te render hoy, tai header er CSS ta ke bhangte pare na */}
+            {typeof document !== "undefined" && createPortal(drawer, document.body)}
         </header>
     );
 }
