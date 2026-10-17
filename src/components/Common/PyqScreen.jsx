@@ -99,7 +99,7 @@ function PyqScreen({ onBack }) {
 
             <header className="pq-head">
                 <span className="eyebrow">Study material</span>
-                <h1>🗂️ Previous Year Solutions</h1>
+                <h1> Previous Year Solutions</h1>
                 <p>Exam-wise previous year questions with solutions, reference images and video tutorials.</p>
             </header>
 

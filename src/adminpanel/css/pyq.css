@@ -11,6 +11,17 @@
     align-self: flex-start;
 }
 
+
+/* হেডার সেকশন সেন্টারে আনার জন্য নতুন CSS */
+
+.pq-head {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .pq-head h1 {
     margin: 6px 0 8px;
 }
@@ -19,6 +30,8 @@
     margin: 0;
     color: var(--muted);
     line-height: 1.7;
+    max-width: 600px;
+    /* টেক্সটকে সুন্দরভাবে মাঝখানে রাখার জন্য */
 }
 
 .pq-filters {
