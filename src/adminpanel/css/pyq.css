@@ -1,0 +1,261 @@
+.pq-wrap {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.pq-wrap>.btn {
+    align-self: flex-start;
+}
+
+.pq-head h1 {
+    margin: 6px 0 8px;
+}
+
+.pq-head p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.pq-filters {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1.6fr;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+}
+
+.pq-filters select,
+.pq-search input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+}
+
+.pq-search {
+    display: flex;
+    gap: 8px;
+}
+
+.pq-search input {
+    flex: 1;
+}
+
+.pq-active {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.pq-count {
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.pq-card {
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--card);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.pq-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.pq-num {
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-weight: 800;
+    background: var(--primary);
+    color: #fff;
+}
+
+.pq-tag {
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pq-tag:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.pq-tag.static {
+    cursor: default;
+    color: var(--muted);
+}
+
+.pq-tag.static:hover {
+    border-color: var(--line);
+    color: var(--muted);
+}
+
+.pq-q {
+    font-size: 16px;
+    width: 100%;
+}
+
+.pq-sol {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--paper);
+    border: 1px dashed var(--line);
+}
+
+.pq-ans {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.pq-muted {
+    margin: 0;
+    color: var(--muted);
+}
+
+.pq-topics {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.pq-chip {
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pq-chip:hover {
+    border-color: var(--primary);
+}
+
+.pq-chip.on {
+    cursor: default;
+    background: var(--primary);
+    color: #fff;
+}
+
+.pq-thumbs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.pq-thumb {
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--card);
+    cursor: zoom-in;
+    aspect-ratio: 4 / 3;
+}
+
+.pq-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.pq-pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    color: var(--muted);
+}
+
+.pq-zoom {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, .85);
+    cursor: zoom-out;
+}
+
+.pq-zoom img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 10px;
+    background: #fff;
+    cursor: default;
+}
+
+.pq-zoom-x {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    color: #111;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+@media (max-width: 760px) {
+    .pq-filters {
+        grid-template-columns: 1fr;
+    }
+    .pq-card {
+        padding: 16px;
+    }
+    .pq-sol {
+        padding: 12px;
+    }
+    .pq-wrap>.btn {
+        width: 100%;
+    }
+    .pq-search .btn {
+        flex: none;
+    }
+}

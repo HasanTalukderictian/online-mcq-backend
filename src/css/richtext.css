@@ -1,0 +1,19 @@
+.rt {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.85;
+}
+
+.rt mark {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: #fde68a;
+    color: #1f2937;
+    font-weight: 600;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.rt strong {
+    font-weight: 800;
+}

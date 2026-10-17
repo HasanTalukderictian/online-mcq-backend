@@ -16,6 +16,8 @@ import NoticesAdmin from "./NoticesAdmin";
 import MessagesAdmin from "./MessagesAdmin";
 import TeamAdmin from "./TeamAdmin";
 import { apiRequest, getData } from "./api";
+import PyqAdmin from "./PyqAdmin";
+
 
 const MENU = [
     { id: "dashboard", icon: "📊", label: "Dashboard" },
@@ -30,6 +32,7 @@ const MENU = [
     { id: "circulars", icon: "💼", label: "Job circulars" },
     { id: "notices", icon: "📢", label: "Notices" },
     { id: "messages", icon: "✉️", label: "Messages" },
+    { id: "pyq", icon: "🗂️", label: "PYQ solutions" },
     { id: "team", icon: "🧑‍💻", label: "Team" },
     { id: "settings", icon: "⚙️", label: "Settings" },
 
@@ -114,6 +117,7 @@ function AdminPanel({ user, token, theme, onToggleTheme, onLogout, onExit, onUse
     else if (page === "team") content = <TeamAdmin token={token} onUnauthorized={onLogout} />;
     else if (page === "notices") content = <NoticesAdmin token={token} onUnauthorized={onLogout} />;
     else if (page === "settings") content = <Settings token={token} user={u} onUnauthorized={onLogout} onUserUpdate={onUserUpdate} />;
+    else if (page === "pyq") content = <PyqAdmin token={token} onUnauthorized={onLogout} />;
     else content = <ComingSoon title={current.label} />;
 
     return (

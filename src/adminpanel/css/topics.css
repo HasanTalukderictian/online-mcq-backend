@@ -55,3 +55,60 @@ a.btn {
     text-decoration: none;
     text-align: center;
 }
+
+
+/* pyq admin */
+
+.tp-tools {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.tp-prev {
+    margin-top: 4px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--paper);
+    border: 1px dashed var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tp-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tp-chip {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+.tp-imgrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.tp-imgrow .tp-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.tp-imgrow img {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+}

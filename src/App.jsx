@@ -13,10 +13,13 @@ import { apiRequest, getData } from "./adminpanel/api";
 import { getAuth, clearAuth, logoutRequest, updateStoredUser } from "./components/Auth/Auth";
 import { isAdminUser } from "./components/Auth/roles";
 import "./css/exam.css";
-import TopicsScreen from "./components/TopicsScreen";
 import CircularsScreen from "./components/CircularsScreen";
 import AboutScreen from "./components/AboutScreen";
 import ContactScreen from "./components/ContactScreen";
+import TopicsScreen from "./components/TopicsScreen";
+import PyqScreen from "./components/Common/PyqScreen";
+
+
 
 const SCREEN_KEY = "app_screen_v1";
 const ADMIN_PAGE_KEY = "admin_page_v1"; // same key as in AdminPanel.jsx
@@ -39,7 +42,7 @@ const initialScreen = () => {
     if (saved === "admin" && !(a && isAdminUser(a.user))) return "start";
     if ((saved === "login" || saved === "register") && a) return "start";
 
-    return ["start", "login", "register", "panel", "admin", "topics", "circulars", "about", "contact"].includes(saved) ? saved : "start";
+    return ["start", "login", "register", "panel", "admin", "topics", "circulars", "about", "contact", "pyq"].includes(saved) ? saved : "start";
 };
 
 const DEFAULT_SITE = {
@@ -367,6 +370,7 @@ function App() {
                         startError={startError}
                         onLogin={() => go("login")}
                         onRetry={loadCatalog}
+                        onPyq={() => go("pyq")}
                         onTopics={openTopics}
                         onCirculars={() => go("circulars")}
                     />
@@ -394,6 +398,8 @@ function App() {
                         <button className="btn" onClick={() => go("login")}>Go to sign in</button>
                     </div>
                 )}
+
+                {screen === "pyq" && <PyqScreen onBack={() => go("start")} />}
 
                 {screen === "about" && <AboutScreen site={site} onBack={() => go("start")} onContact={() => go("contact")} />}
                 {screen === "contact" && <ContactScreen site={site} onBack={() => go("start")} />}

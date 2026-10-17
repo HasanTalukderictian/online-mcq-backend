@@ -15,6 +15,7 @@ const labels = {
     register: "Sign up",
     admin: "Admin Dashboard",
     about: "About",
+    pyq: "Previous year solutions",
     contact: "Contact",
 };
 
@@ -94,6 +95,8 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
         { key: "exam",      label: "Exam",          icon: "📝", target: "exam",      on: screen === "quiz",      show: true,     desk: true },
         { key: "circulars", label: "Circulars",     icon: "💼", target: "circulars", on: screen === "circulars", show: true,     desk: true },
         { key: "topics",    label: "Topics",        icon: "📌", target: "topics",    on: screen === "topics",    show: !isAdmin, desk: true },
+        // Changed show: !isAdmin to show: true so it appears for Admins too
+        { key: "pyq",       label: "PYQ",           icon: "📚", target: "pyq",       on: screen === "pyq",       show: true,     desk: true }, 
         { key: "panel",     label: "Student Panel", icon: "📊", target: "panel",     on: inPanel,                show: !isAdmin, desk: true },
         { key: "about",     label: "About Us",      icon: "ℹ️", target: "about",     on: screen === "about",     show: true,     desk: true },
         { key: "contact",   label: "Contact",       icon: "✉️", target: "contact",   on: screen === "contact",   show: true,     desk: true },
