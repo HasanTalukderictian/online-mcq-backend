@@ -18,6 +18,8 @@ import AboutScreen from "./components/AboutScreen";
 import ContactScreen from "./components/ContactScreen";
 import TopicsScreen from "./components/TopicsScreen";
 import PyqScreen from "./components/Common/PyqScreen";
+import ModelTestsScreen from "./components/Common/ModelTestsScreen";
+import ModelHistory from "./components/Common/ModelHistory";
 
 
 
@@ -42,7 +44,7 @@ const initialScreen = () => {
     if (saved === "admin" && !(a && isAdminUser(a.user))) return "start";
     if ((saved === "login" || saved === "register") && a) return "start";
 
-    return ["start", "login", "register", "panel", "admin", "topics", "circulars", "about", "contact", "pyq"].includes(saved) ? saved : "start";
+    return ["start", "login", "register", "panel", "admin", "topics", "circulars", "about", "contact", "pyq", "model"].includes(saved) ? saved : "start";
 };
 
 const DEFAULT_SITE = {
@@ -90,6 +92,10 @@ function App() {
     const [topicsFocus, setTopicsFocus] = useState(null);
     const [pending, setPending] = useState("start");
     const [pendingExam, setPendingExam] = useState(null); // exam a guest wanted to start
+
+    const [modelNotice, setModelNotice] = useState(null);
+    const [modelError, setModelError] = useState("");
+    const [startingModel, setStartingModel] = useState(null);
     const [theme, setTheme] = useState(() => {
         try {
             return (
@@ -209,6 +215,28 @@ function App() {
         setStarting(false);
     };
 
+    /* ---------- start a model test ---------- */
+    const startModel = async (id) => {
+        if (!auth) {
+            setScreen("login");
+            return;
+        }
+        setStartingModel(id);
+        setModelError("");
+        setModelNotice(null);
+        try {
+            const body = await apiRequest("/student/model-tests/" + id + "/start", { method: "POST", token: auth.token, body: {} });
+            const e = getData(body);
+            setSession({ kind: "model", id: e.id, name: e.name, subject: "Model Test", time: e.time, questions: e.questions });
+            setScreen("quiz");
+            window.scrollTo({ top: 0 });
+        } catch (err) {
+            if (err.status === 401) forceLogout();
+            else setModelError(err.message);
+        }
+        setStartingModel(null);
+    };
+
     // Start button: guests must sign up first (we remember which exam they wanted)
     const handleStart = (examId) => {
         if (!auth) {
@@ -273,13 +301,22 @@ function App() {
         session.questions.forEach((q, i) => {
             if (answers[i]) payload[q.id] = answers[i];
         });
-        const data = { examId: session.id, body: { answers: payload, time_taken: taken, time_up: timeUp } };
+        const data = {
+            examId: session.id,
+            model: session.kind === "model",
+            title: session.name,
+            body: { answers: payload, time_taken: taken, time_up: timeUp },
+        };
         setPendingSubmit(data);
         sendSubmit(data);
     };
 
     /* ---------- navigation ---------- */
     const navigate = (target) => {
+        if (target !== "model") {
+            setModelNotice(null);
+            setModelError("");
+        }
         if (target === "admin" && !(auth && isAdminUser(auth.user))) target = "start";
         if (target !== "login" && target !== "register") setPendingExam(null);
 
@@ -389,6 +426,36 @@ function App() {
                         reason={!!pendingExam}
                     />
                 )}
+
+
+                {screen === "model" && (
+                    <ModelTestsScreen
+                        token={token}
+                        user={auth && auth.user}
+                        notice={modelNotice}
+                        error={modelError}
+                        startingId={startingModel}
+                        onStart={startModel}
+                        onLogin={() => go("login")}
+                        onPanel={() => go("panel")}
+                        onBack={() => go("start")}
+                    />
+                )}
+
+                {screen === "panel" && (
+                    <>
+                        <StudentPanel
+                            user={auth && auth.user}
+                            token={token}
+                            onOpen={openRecord}
+                            onStart={() => go("start")}
+                            onLogin={() => go("login")}
+                            onUnauthorized={forceLogout}
+                        />
+                        {auth && <ModelHistory token={token} onUnauthorized={forceLogout} onOpenModel={() => go("model")} />}
+                    </>
+                )}
+
                 {screen === "register" && site.registration_open && (
                     <Register onSuccess={handleLogin} onSwitch={() => go("login")} reason={!!pendingExam} />
                 )}

@@ -15,6 +15,7 @@ const labels = {
     register: "Sign up",
     admin: "Admin Dashboard",
     about: "About",
+    model: "Model test",
     pyq: "Previous year solutions",
     contact: "Contact",
 };
@@ -93,8 +94,9 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
     const items = [
         { key: "start",     label: "Home",          icon: "🏠", target: "start",     on: screen === "start",     show: !isAdmin, desk: false },
         { key: "exam",      label: "Exam",          icon: "📝", target: "exam",      on: screen === "quiz",      show: true,     desk: true },
+        // ✅ Model Test Button Add Kora Hoyeche
+        { key: "model",     label: "Model Test",    icon: "🏆", target: "model",     on: screen === "model",     show: true,     desk: true },
         { key: "circulars", label: "Circulars",     icon: "💼", target: "circulars", on: screen === "circulars", show: true,     desk: true },
-        // ✅ Topics এ show: true করে দেওয়া হলো যাতে অ্যাডমিনরাও দেখতে পায়
         { key: "topics",    label: "Topics",        icon: "📌", target: "topics",    on: screen === "topics",    show: true,     desk: true },
         { key: "pyq",       label: "Question Bank", icon: "📚", target: "pyq",       on: screen === "pyq",       show: true,     desk: true }, 
         { key: "panel",     label: "Student Panel", icon: "📊", target: "panel",     on: inPanel,                show: !isAdmin, desk: true },

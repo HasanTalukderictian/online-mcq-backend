@@ -24,3 +24,11 @@ export function daysLeft(end) {
     const t = new Date(n.getFullYear(), n.getMonth(), n.getDate());
     return Math.round((e - t) / 86400000);
 }
+
+// "2026-10-18" + 4 -> "2026-10-22"
+export function addDays(s, n) {
+    const p = String(s).slice(0, 10).split("-").map(Number);
+    if (p.length !== 3 || p.some((x) => isNaN(x))) return "";
+    const d = new Date(p[0], p[1] - 1, p[2] + n);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}

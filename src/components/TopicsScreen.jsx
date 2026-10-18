@@ -94,7 +94,7 @@ function TopicsScreen({ initialSubjectId, onBack }) {
         const t = detail.topic;
         return (
             <section className="tpc-wrap">
-                <button type="button" className="btn ghost" onClick={() => setTopicId(null)}>← All topics</button>
+                                
 
                 {detail.loading && <div className="panel loading-box">Loading topic...</div>}
 
