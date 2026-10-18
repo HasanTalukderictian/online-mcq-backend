@@ -119,6 +119,7 @@ function App() {
     const submittingRef = useRef(false);
 
     const token = auth ? auth.token : null;
+    const currentUser = auth ? auth.user : null; // ✅ удобнее accessible
 
     useEffect(() => {
         document.documentElement.dataset.theme = theme;
@@ -399,7 +400,13 @@ function App() {
                     </div>
                 )}
 
-                {screen === "pyq" && <PyqScreen onBack={() => go("start")} />}
+                {screen === "pyq" && (
+                    <PyqScreen
+                        onBack={() => go("start")}
+                        user={currentUser}
+                        onLogin={(target) => go(target)}
+                    />
+                )}
 
                 {screen === "about" && <AboutScreen site={site} onBack={() => go("start")} onContact={() => go("contact")} />}
                 {screen === "contact" && <ContactScreen site={site} onBack={() => go("start")} />}

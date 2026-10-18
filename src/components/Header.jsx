@@ -94,9 +94,9 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
         { key: "start",     label: "Home",          icon: "🏠", target: "start",     on: screen === "start",     show: !isAdmin, desk: false },
         { key: "exam",      label: "Exam",          icon: "📝", target: "exam",      on: screen === "quiz",      show: true,     desk: true },
         { key: "circulars", label: "Circulars",     icon: "💼", target: "circulars", on: screen === "circulars", show: true,     desk: true },
-        { key: "topics",    label: "Topics",        icon: "📌", target: "topics",    on: screen === "topics",    show: !isAdmin, desk: true },
-        // Changed show: !isAdmin to show: true so it appears for Admins too
-        { key: "pyq",       label: "PYQ",           icon: "📚", target: "pyq",       on: screen === "pyq",       show: true,     desk: true }, 
+        // ✅ Topics এ show: true করে দেওয়া হলো যাতে অ্যাডমিনরাও দেখতে পায়
+        { key: "topics",    label: "Topics",        icon: "📌", target: "topics",    on: screen === "topics",    show: true,     desk: true },
+        { key: "pyq",       label: "Question Bank", icon: "📚", target: "pyq",       on: screen === "pyq",       show: true,     desk: true }, 
         { key: "panel",     label: "Student Panel", icon: "📊", target: "panel",     on: inPanel,                show: !isAdmin, desk: true },
         { key: "about",     label: "About Us",      icon: "ℹ️", target: "about",     on: screen === "about",     show: true,     desk: true },
         { key: "contact",   label: "Contact",       icon: "✉️", target: "contact",   on: screen === "contact",   show: true,     desk: true },

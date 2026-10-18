@@ -8,15 +8,29 @@ import VideoEmbed from "../VideoEmbed";
 
 const NO_FILTER = { subject: "", exam: "", topic: "", q: "" };
 
-function PyqScreen({ onBack }) {
-    const [f, setF] = useState(NO_FILTER); // applied filters
+function PyqScreen({ onBack, user, onLogin }) {
+    const [f, setF] = useState(NO_FILTER);
     const [qInput, setQInput] = useState("");
     const [page, setPage] = useState(1);
-    const [data, setData] = useState({ loading: true, error: "", items: [], last: 1, total: 0, subjects: [], exams: [] });
+    const [data, setData] = useState({ 
+        loading: true, 
+        error: "", 
+        items: [], 
+        last: 1, 
+        total: 0, 
+        subjects: [], 
+        exams: [] 
+    });
     const [open, setOpen] = useState({});
     const [zoom, setZoom] = useState("");
 
+    // 🔒 লগইন চেক
+    const loggedIn = !!user;
+
     useEffect(() => {
+        // 🚫 লগইন না থাকলে API কল হবে না
+        if (!loggedIn) return;
+
         let alive = true;
         setData((d) => ({ ...d, loading: true, error: "" }));
 
@@ -48,7 +62,7 @@ function PyqScreen({ onBack }) {
         return () => {
             alive = false;
         };
-    }, [f, page]);
+    }, [f, page, loggedIn]);
 
     // close the image viewer with Escape
     useEffect(() => {
@@ -81,36 +95,58 @@ function PyqScreen({ onBack }) {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    // ✅ এখানে পরিবর্তন করা হয়েছে: একসাথে শুধু একটি ওপেন থাকবে
     const toggle = (id) => {
         setOpen((o) => {
             const isCurrentlyOpen = !!o[id];
-            // যদি বর্তমানটি আগে থেকেই ওপেন থাকে তবে ক্লোজ করে দিবে, 
-            // না থাকলে আগের সব ক্লোজ করে শুধু এই আইডিটি ওপেন করবে
             return isCurrentlyOpen ? {} : { [id]: true };
         });
     };
 
     const filtered = !!(f.subject || f.exam || f.topic || f.q);
 
+    // =========================================================
+    // 🔒 লগইন না থাকলে এই স্ক্রিনটা দেখাবে
+    // =========================================================
+    if (!loggedIn) {
+        return (
+            <section className="pq-wrap">
+                <header className="pq-head">
+                    <span className="eyebrow">Study material</span>
+                    <h1>Previous Year Solutions</h1>
+                    <p>Exam-wise previous year questions with solutions, reference images and video tutorials.</p>
+                </header>
+
+                <div className="panel loading-box" style={{ textAlign: "center", padding: "40px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+                    <span style={{ fontSize: "52px", lineHeight: 1 }} aria-hidden="true">🔒</span>
+                    <h2 style={{ margin: 0 }}>Login required</h2>
+                    <p style={{ maxWidth: "420px", margin: 0, color: "var(--muted)", lineHeight: 1.7 }}>
+                        Previous year solutions are available for logged-in students only. Please sign in to continue.
+                    </p>
+                    <div style={{ marginTop: "10px", display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+                        <button type="button" className="btn" onClick={() => onLogin && onLogin("login")}>
+                            Login
+                        </button>
+                        <button type="button" className="btn ghost" onClick={() => onLogin && onLogin("register")}>
+                            Register
+                        </button>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    // =========================================================
+    // ✅ লগইন থাকলে নরমাল ভিউ
+    // =========================================================
     return (
         <section className="pq-wrap">
-           
-
             <header className="pq-head">
                 <span className="eyebrow">Study material</span>
-                <h1> Previous Year Solutions</h1>
+                <h1>Previous Year Solutions</h1>
                 <p>Exam-wise previous year questions with solutions, reference images and video tutorials.</p>
             </header>
 
             <div className="pq-filters">
-                <select value={f.subject} onChange={(e) => change({ subject: e.target.value })} aria-label="Subject">
-                    <option value="">All subjects</option>
-                    {data.subjects.map((s) => (
-                        <option key={s.id} value={s.id}>{s.icon} {s.name}</option>
-                    ))}
-                </select>
-
                 <select value={f.exam} onChange={(e) => change({ exam: e.target.value })} aria-label="Exam">
                     <option value="">All exams</option>
                     {data.exams.map((x) => (

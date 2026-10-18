@@ -90,7 +90,7 @@ function CircularsScreen({ onBack }) {
 
     return (
         <section className="cr-wrap">
-            <button type="button" className="btn ghost" onClick={onBack}>Home</button>
+           
 
             <header className="cr-head">
                 <span className="eyebrow">Career</span>
