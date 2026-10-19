@@ -19,6 +19,11 @@ function ModelTestsAdmin({ token, onUnauthorized }) {
     const [fieldErr, setFieldErr] = useState({});
     const [note, setNote] = useState(null);
 
+    // 👇 Custom Delete Modal State
+    const [toDelete, setToDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState("");
+
     const unauthorized = (err) => {
         if (err.status === 401) {
             onUnauthorized();
@@ -107,24 +112,38 @@ function ModelTestsAdmin({ token, onUnauthorized }) {
         }
     };
 
-    const remove = async (t) => {
-        const warn = t.started_count
-            ? '"' + t.name + '" has ' + t.started_count + " student attempt(s). Deleting removes the test, its questions and ALL attempts and marks. Continue?"
-            : 'Delete "' + t.name + '" and its questions?';
-        if (!window.confirm(warn)) return;
+    // 👇 Modal Open & Delete Logic
+    const openDelete = (t) => {
+        setDeleteError("");
+        setToDelete(t);
+    };
+
+    const closeDelete = () => {
+        if (deleting) return;
+        setToDelete(null);
+        setDeleteError("");
+    };
+
+    const confirmDelete = async () => {
+        if (!toDelete) return;
+        setDeleting(true);
+        setDeleteError("");
         try {
-            await apiRequest("/admin/model-tests/" + t.id, { method: "DELETE", token });
+            await apiRequest("/admin/model-tests/" + toDelete.id, { method: "DELETE", token });
+            setToDelete(null);
             setNote({ type: "ok", text: "Model test deleted." });
             load();
         } catch (err) {
             if (unauthorized(err)) return;
-            setNote({ type: "bad", text: err.message });
+            setDeleteError(err.message || "Could not delete this model test.");
         }
+        setDeleting(false);
     };
 
     const firstError = (key) => (fieldErr[key] && fieldErr[key][0] ? fieldErr[key][0] : "");
 
-    if (view && view.type === "questions") {
+    // 👇 Results অথবা Questions ভিউ রেন্ডার
+    if (view && view.type === "questions" && view.test) {
         return (
             <ModelTestQuestions
                 test={view.test}
@@ -137,8 +156,16 @@ function ModelTestsAdmin({ token, onUnauthorized }) {
             />
         );
     }
-    if (view && view.type === "results") {
-        return <ModelTestResults test={view.test} token={token} onUnauthorized={onUnauthorized} onBack={() => setView(null)} />;
+    
+    if (view && view.type === "results" && view.test) {
+        return (
+            <ModelTestResults 
+                test={view.test} 
+                token={token} 
+                onUnauthorized={onUnauthorized} 
+                onBack={() => setView(null)} 
+            />
+        );
     }
 
     const lockedEdit = !!(editRow && editRow.started_count > 0);
@@ -213,7 +240,7 @@ function ModelTestsAdmin({ token, onUnauthorized }) {
                                                     <button type="button" className="btn ghost sm" onClick={() => setView({ type: "questions", test: t })}>Questions</button>
                                                     <button type="button" className="btn ghost sm" onClick={() => setView({ type: "results", test: t })}>Results</button>
                                                     <button type="button" className="btn ghost sm" onClick={() => openEdit(t)}>Edit</button>
-                                                    <button type="button" className="btn bad sm" onClick={() => remove(t)}>Delete</button>
+                                                    <button type="button" className="btn bad sm" onClick={() => openDelete(t)}>Delete</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -278,6 +305,42 @@ function ModelTestsAdmin({ token, onUnauthorized }) {
                         <div className="tp-foot">
                             <button type="button" className="btn ghost" disabled={saving} onClick={() => setForm(null)}>Cancel</button>
                             <button type="button" className="btn" disabled={saving} onClick={save}>{saving ? "Saving..." : "Save"}</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ============ DELETE CONFIRM MODAL ============ */}
+            {toDelete && (
+                <div className="mt-overlay" onClick={closeDelete}>
+                    <div className="mt-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="mt-modal-icon">🗑️</div>
+
+                        <h2 className="mt-modal-title">Delete model test?</h2>
+
+                        <div className="mt-modal-body">
+                            <p>
+                                You are about to delete <b>{toDelete.name}</b>.
+                            </p>
+                            <ul className="mt-modal-list">
+                                {toDelete.started_count > 0 ? (
+                                    <li>This test has <b>{toDelete.started_count} student attempt(s)</b>. Deleting will remove the test, its questions, and ALL attempts and marks.</li>
+                                ) : (
+                                    <li>This will remove the test and all its questions.</li>
+                                )}
+                                <li>This action <b>cannot be undone</b>.</li>
+                            </ul>
+
+                            {deleteError && <div className="mt-note bad" style={{ marginTop: 12 }}>{deleteError}</div>}
+                        </div>
+
+                        <div className="mt-modal-foot">
+                            <button type="button" className="btn ghost" disabled={deleting} onClick={closeDelete}>
+                                Cancel
+                            </button>
+                            <button type="button" className="btn bad" disabled={deleting} onClick={confirmDelete}>
+                                {deleting ? "Deleting..." : "Yes, delete"}
+                            </button>
                         </div>
                     </div>
                 </div>

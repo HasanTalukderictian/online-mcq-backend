@@ -489,16 +489,7 @@ function App() {
                 {screen === "result" && result && (
                     <ResultScreen {...result} candidate={userName} onRestart={() => go("start")} />
                 )}
-                {screen === "panel" && (
-                    <StudentPanel
-                        user={auth && auth.user}
-                        token={token}
-                        onOpen={openRecord}
-                        onStart={() => go("start")}
-                        onLogin={() => go("login")}
-                        onUnauthorized={forceLogout}
-                    />
-                )}
+               
                 {screen === "detail" && record && (
                     <ResultScreen
                         {...record}

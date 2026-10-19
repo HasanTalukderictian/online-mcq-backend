@@ -58,7 +58,7 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
 
     useEffect(() => {
         if (!window.matchMedia) return undefined;
-        const mq = window.matchMedia("(min-width: 961px)");
+        const mq = window.matchMedia("(min-width: 1101px)");
         const onChange = (e) => { if (e.matches) setOpen(false); };
         if (mq.addEventListener) mq.addEventListener("change", onChange);
         else mq.addListener(onChange);

@@ -1,5 +1,6 @@
 /* =========================================================
-   Header.css  (Desktop: 961px+ | Mobile drawer: up to 960px)
+   Header.css
+   Desktop: 1101px and up   |   Mobile/tablet drawer: up to 1100px
    ========================================================= */
 
 .site-header {
@@ -9,32 +10,14 @@
     --h-primary: var(--primary, #3347d6);
     --h-primary-soft: color-mix(in srgb, var(--h-primary) 14%, var(--h-bg));
     --h-hover: rgba(127, 127, 127, 0.14);
-    /* Mobile drawer er jonno solid color (light) */
-    --d-bg: #ffffff;
-    --d-text: #111827;
-    --d-line: #d1d5db;
-    --d-item: #f3f4f6;
-    --d-active-bg: #e0e7ff;
-    --d-active-text: #3347d6;
     position: sticky;
     top: 0;
     z-index: 100;
     width: 100%;
     background: var(--h-bg);
     border-bottom: 1px solid var(--h-line);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
     box-sizing: border-box;
-}
-
-
-/* Dark mode er solid color */
-
-.site-header.is-dark {
-    --d-bg: #111827;
-    --d-text: #f3f4f6;
-    --d-line: #374151;
-    --d-item: #1f2937;
-    --d-active-bg: #312e81;
-    --d-active-text: #c7d2fe;
 }
 
 .site-header *,
@@ -48,10 +31,11 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: nowrap;
-    gap: 16px;
-    max-width: 1200px;
+    gap: 20px;
+    max-width: 1320px;
     margin: 0 auto;
     padding: 10px 24px;
+    min-height: 62px;
 }
 
 
@@ -61,7 +45,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    flex: 0 1 auto;
+    flex: 0 0 auto;
+    /* logo kokhono shrink hobe na */
     min-width: 0;
     padding: 0;
     margin: 0;
@@ -91,10 +76,11 @@
 
 .site-header .logo-text {
     min-width: 0;
+    max-width: 260px;
+    /* khub boro nam hole ... dekhabe */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 240px;
 }
 
 
@@ -117,7 +103,9 @@
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
-    padding: 7px 14px;
+    justify-content: center;
+    height: 36px;
+    padding: 0 14px;
     background: var(--h-bg);
     border: 1px solid var(--h-line);
     border-radius: 999px;
@@ -125,14 +113,10 @@
     font: inherit;
     font-size: 13.5px;
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1;
     white-space: nowrap;
     cursor: pointer;
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.site-header .nav-btn b {
-    font-weight: 600;
 }
 
 .site-header .nav-btn:hover {
@@ -143,6 +127,7 @@
     background: var(--h-primary-soft);
     border-color: var(--h-primary);
     color: var(--h-primary);
+    font-weight: 700;
 }
 
 
@@ -185,400 +170,7 @@
     width: 36px;
     height: 36px;
     padding: 0;
-    background: var(--h-bg);
-    border: 1px solid var(--h-line);
-    border-radius: 50%;
-    color: var(--h-text);
-    cursor: pointer;
-    transition: background 0.15s ease;
-}
-
-.site-header .theme-btn:hover {
-    background: var(--h-hover);
-}
-
-
-/* ---------- Hamburger (desktop e hidden) ---------- */
-
-.site-header .menu-btn {
-    display: none;
-    flex: 0 0 auto;
-    position: relative;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    background: var(--h-bg);
-    border: 1px solid var(--h-line);
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.site-header .menu-btn span {
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--h-text);
-    transition: transform 0.2s ease, opacity 0.2s ease, top 0.2s ease;
-}
-
-.site-header .menu-btn span:nth-child(1) {
-    top: 13px;
-}
-
-.site-header .menu-btn span:nth-child(2) {
-    top: 19px;
-}
-
-.site-header .menu-btn span:nth-child(3) {
-    top: 25px;
-}
-
-.site-header .menu-btn.on span:nth-child(1) {
-    top: 19px;
-    transform: rotate(45deg);
-}
-
-.site-header .menu-btn.on span:nth-child(2) {
-    opacity: 0;
-}
-
-.site-header .menu-btn.on span:nth-child(3) {
-    top: 19px;
-    transform: rotate(-45deg);
-}
-
-.site-header .menu-backdrop {
-    display: none;
-}
-
-
-/* ---------- Focus ---------- */
-
-.site-header .logo:focus-visible,
-.site-header .nav-btn:focus-visible,
-.site-header .theme-btn:focus-visible,
-.site-header .menu-btn:focus-visible {
-    outline: 2px solid var(--h-primary);
-    outline-offset: 2px;
-}
-
-
-/* =========================================================
-   DESKTOP: current page er naam pill (non-live) lukano
-   ========================================================= */
-
-@media (min-width: 961px) {
-    .site-header .status:not(.live) {
-        display: none;
-    }
-}
-
-
-/* Chhoto laptop: ektu compact */
-
-@media (min-width: 961px) and (max-width: 1180px) {
-    .site-header-in {
-        padding: 10px 16px;
-        gap: 12px;
-    }
-    .site-header .nav-btn {
-        padding: 6px 10px;
-        font-size: 13px;
-    }
-    .site-header .logo-text {
-        max-width: 160px;
-    }
-}
-
-
-/* =========================================================
-   MOBILE / TABLET: slide-in drawer (solid, clear colors)
-   ========================================================= */
-
-@media (max-width: 960px) {
-    .site-header-in {
-        padding: 10px 16px;
-    }
-    .site-header .logo-text {
-        max-width: 200px;
-    }
-    .site-header .menu-btn {
-        display: block;
-    }
-    /* Peter er dark overlay */
-    .site-header .menu-backdrop {
-        display: block;
-        position: fixed;
-        top: var(--header-h, 60px);
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.55);
-        z-index: 98;
-    }
-    /* Drawer */
-    .site-header .head-right {
-        position: fixed;
-        top: var(--header-h, 60px);
-        right: 0;
-        bottom: 0;
-        width: min(300px, 82vw);
-        flex: none;
-        background: var(--d-bg);
-        border-left: 1px solid var(--d-line);
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.25);
-        transform: translateX(100%);
-        visibility: hidden;
-        transition: transform 0.25s ease, visibility 0.25s;
-        z-index: 99;
-    }
-    .site-header .head-right.open {
-        transform: translateX(0);
-        visibility: visible;
-    }
-    .site-header .menu-scroll {
-        flex-direction: column;
-        align-items: stretch;
-        justify-content: flex-start;
-        flex-wrap: nowrap;
-        gap: 8px;
-        height: 100%;
-        padding: 16px;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    /* Menu item: bhalo kore dekha jay emon row */
-    .site-header .nav-btn {
-        width: 100%;
-        justify-content: flex-start;
-        padding: 14px 16px;
-        font-size: 16px;
-        font-weight: 600;
-        border-radius: 12px;
-        background: var(--d-item);
-        border: 1px solid var(--d-line);
-        color: var(--d-text);
-    }
-    .site-header .nav-btn b {
-        font-weight: 600;
-        color: inherit;
-    }
-    .site-header .nav-btn:hover,
-    .site-header .nav-btn:active {
-        background: var(--d-active-bg);
-    }
-    .site-header .nav-btn.on {
-        background: var(--d-active-bg);
-        border-color: var(--d-active-text);
-        color: var(--d-active-text);
-    }
-    /* Current page naam: drawer er upore label hishebe */
-    .site-header .status {
-        text-align: center;
-        border-radius: 12px;
-        padding: 10px 14px;
-        background: var(--d-active-bg);
-        color: var(--d-active-text);
-    }
-    .site-header .status.live {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-    .site-header .theme-btn {
-        align-self: flex-start;
-        width: 44px;
-        height: 44px;
-        margin-top: 4px;
-        background: var(--d-item);
-        border: 1px solid var(--d-line);
-        color: var(--d-text);
-    }
-}
-
-@media (max-width: 420px) {
-    .site-header .logo-text {
-        max-width: 150px;
-        font-size: 16px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .site-header .head-right,
-    .site-header .menu-btn span {
-        transition: none;
-    }
-    .site-header .status.live {
-        animation: none;
-    }
-}
-
-
-/* =========================================================
-   Header.css  (Desktop: 961px+ | Mobile drawer: up to 960px)
-   ========================================================= */
-
-.site-header {
-    --h-bg: var(--card, #ffffff);
-    --h-line: var(--line, #e5e7eb);
-    --h-text: var(--ink, #1f2937);
-    --h-primary: var(--primary, #3347d6);
-    --h-primary-soft: color-mix(in srgb, var(--h-primary) 14%, var(--h-bg));
-    --h-hover: rgba(127, 127, 127, 0.14);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    width: 100%;
-    background: var(--h-bg);
-    border-bottom: 1px solid var(--h-line);
-    box-sizing: border-box;
-}
-
-.site-header *,
-.site-header *::before,
-.site-header *::after {
-    box-sizing: border-box;
-}
-
-.site-header-in {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 16px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px 24px;
-}
-
-
-/* ---------- Logo ---------- */
-
-.site-header .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 0 1 auto;
-    min-width: 0;
-    padding: 0;
-    margin: 0;
-    background: none;
-    border: 0;
-    color: var(--h-text);
-    font: inherit;
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.2px;
-    cursor: pointer;
-}
-
-.site-header .logo i {
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: var(--h-primary);
-    color: #fff;
-    font-style: normal;
-    font-size: 20px;
-    line-height: 1;
-}
-
-.site-header .logo-text {
-    min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 240px;
-}
-
-
-/* ---------- Nav (desktop) ---------- */
-
-.site-header .head-right {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.site-header .menu-scroll {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 6px;
-}
-
-.site-header .nav-btn {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 14px;
-    background: var(--h-bg);
-    border: 1px solid var(--h-line);
-    border-radius: 999px;
-    color: var(--h-text);
-    font: inherit;
-    font-size: 13.5px;
-    font-weight: 600;
-    line-height: 1.2;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.site-header .nav-btn:hover {
-    background: var(--h-hover);
-}
-
-.site-header .nav-btn.on {
-    background: var(--h-primary-soft);
-    border-color: var(--h-primary);
-    color: var(--h-primary);
-}
-
-
-/* ---------- Status pill ---------- */
-
-.site-header .status {
-    flex: 0 0 auto;
-    padding: 7px 14px;
-    border-radius: 999px;
-    background: var(--h-primary-soft);
-    color: var(--h-primary);
-    font-size: 13px;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.site-header .status.live {
-    background: #fee2e2;
-    color: #b91c1c;
-    animation: hdrPulse 1.6s ease-in-out infinite;
-}
-
-@keyframes hdrPulse {
-    0%,
-    100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.6;
-    }
-}
-
-
-/* ---------- Theme button (desktop) ---------- */
-
-.site-header .theme-btn {
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    padding: 0;
+    margin-left: 2px;
     background: var(--h-bg);
     border: 1px solid var(--h-line);
     border-radius: 50%;
@@ -664,45 +256,55 @@
 
 
 /* =========================================================
-   DESKTOP
+   DESKTOP (1101px+)
    ========================================================= */
 
-@media (min-width: 961px) {
+@media (min-width: 1101px) {
     .site-header .status:not(.live) {
         display: none;
     }
 }
 
-@media (min-width: 961px) and (max-width: 1180px) {
+
+/* Chhoto laptop (1101px - 1280px): ektu compact, jate shob button ek line e fit hoy */
+
+@media (min-width: 1101px) and (max-width: 1280px) {
     .site-header-in {
         padding: 10px 16px;
         gap: 12px;
     }
+    .site-header .menu-scroll {
+        gap: 4px;
+    }
     .site-header .nav-btn {
-        padding: 6px 10px;
+        padding: 0 10px;
         font-size: 13px;
     }
+    .site-header .logo {
+        font-size: 17px;
+    }
     .site-header .logo-text {
-        max-width: 160px;
+        max-width: 190px;
     }
 }
 
 
 /* =========================================================
-   MOBILE / TABLET: Admin-style sidebar drawer (bam theke)
+   MOBILE / TABLET (up to 1100px): sidebar drawer (bam theke)
    ========================================================= */
 
-@media (max-width: 960px) {
+@media (max-width: 1100px) {
     .site-header-in {
         padding: 10px 16px;
+        min-height: 60px;
     }
     .site-header .logo-text {
-        max-width: 200px;
+        max-width: 220px;
     }
     .site-header .menu-btn {
         display: block;
     }
-    /* desktop nav mobile e lukano */
+    /* desktop nav ekhane lukano */
     .site-header .head-right {
         display: none;
     }
@@ -912,9 +514,11 @@
 }
 
 @media (max-width: 420px) {
+    .site-header .logo {
+        font-size: 16px;
+    }
     .site-header .logo-text {
         max-width: 150px;
-        font-size: 16px;
     }
 }
 
