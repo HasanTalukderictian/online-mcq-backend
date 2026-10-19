@@ -26,6 +26,14 @@ function QuizScreen({ questions, subjectName, candidate, timeLimit, onFinish }) 
   const answered = Object.keys(answers).length;
   const submit = () => onFinish(answers, false, timeLimit - left);
 
+  // প্যালেট থেকে প্রশ্নে ক্লিক করার সময় চেক করা হবে
+  const jumpTo = (index) => {
+    // 👇 যদি ক্লিক করা প্রশ্নটি বর্তমান প্রশ্নের চেয়ে বড় হয় (সামনের দিকে যায়)
+    // তবে সেটি লক থাকবে। শুধু আগের প্রশ্নে ফেরা যাবে।
+    if (index > cur) return;
+    setCur(index);
+  };
+
   return (
     <>
       <div className="topbar">
@@ -73,15 +81,22 @@ function QuizScreen({ questions, subjectName, candidate, timeLimit, onFinish }) 
         <div className="panel side">
           <h3>Question palette</h3>
           <div className="grid">
-            {questions.map((_, i) => (
-              <button
-                key={i}
-                className={`pal ${marked[i] ? "mark" : answers[i] ? "done" : ""} ${i === cur ? "cur" : ""}`}
-                onClick={() => setCur(i)}
-              >
-                {i + 1}
-              </button>
-            ))}
+            {questions.map((_, i) => {
+              // 👇 সামনের প্রশ্নগুলো প্যালেটে ডিজেবল (Locked) থাকবে
+              const isLocked = i > cur;
+              
+              return (
+                <button
+                  key={i}
+                  disabled={isLocked}
+                  className={`pal ${marked[i] ? "mark" : answers[i] ? "done" : ""} ${i === cur ? "cur" : ""} ${isLocked ? "locked" : ""}`}
+                  onClick={() => jumpTo(i)}
+                  style={isLocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                >
+                  {i + 1}
+                </button>
+              );
+            })}
           </div>
           <div className="legend">
             <span><i style={{ background: "var(--ok)" }} />Answered ({answered})</span>

@@ -21,12 +21,9 @@ import PyqScreen from "./components/Common/PyqScreen";
 import ModelTestsScreen from "./components/Common/ModelTestsScreen";
 import ModelHistory from "./components/Common/ModelHistory";
 
-
-
 const SCREEN_KEY = "app_screen_v1";
-const ADMIN_PAGE_KEY = "admin_page_v1"; // same key as in AdminPanel.jsx
+const ADMIN_PAGE_KEY = "admin_page_v1";
 
-// Which page to show when the app starts (also after a refresh)
 const initialScreen = () => {
     const a = getAuth();
     let saved = "";
@@ -34,12 +31,8 @@ const initialScreen = () => {
         saved = sessionStorage.getItem(SCREEN_KEY) || "";
     } catch { }
 
-    // first time in this tab: an admin opens the dashboard, everybody else the home page
     if (!saved) return a && isAdminUser(a.user) ? "admin" : "start";
-
-    // an exam in progress cannot be resumed after a refresh
     if (saved === "quiz") return "start";
-    // result pages need data that is gone after a refresh: go to the history instead
     if (saved === "result" || saved === "detail") return a ? "panel" : "start";
     if (saved === "admin" && !(a && isAdminUser(a.user))) return "start";
     if ((saved === "login" || saved === "register") && a) return "start";
@@ -51,8 +44,7 @@ const DEFAULT_SITE = {
     site_name: "Online Exam Portal",
     site_tagline: "",
     hero_title: "ONLINE MCQ TEST",
-    hero_text:
-        "Boost your exam preparation with dynamic MCQ tests across multiple subjects. Evaluate your skills with a live timer, question palette and instant results.",
+    hero_text: "Boost your exam preparation with dynamic MCQ tests across multiple subjects. Evaluate your skills with a live timer, question palette and instant results.",
     footer_text: "",
     contact_email: "",
     contact_phone: "",
@@ -61,13 +53,12 @@ const DEFAULT_SITE = {
     maintenance_message: "",
 };
 
-// API attempt -> props for ResultScreen
+// API attempt -> props for ResultScreen (Exam)
 const toResult = (a) => {
     const items = a.items || [];
     return {
         questions: items.map((i) => ({
             question: i.q,
-            // when answers are hidden, a right answer is the student's own answer
             answer: i.ans !== null && i.ans !== undefined ? i.ans : i.ok ? i.sel : null,
         })),
         answers: Object.fromEntries(items.map((i, idx) => [idx, i.sel]).filter((p) => p[1])),
@@ -83,37 +74,49 @@ const toResult = (a) => {
     };
 };
 
-
+// Model Test attempt -> props for ResultScreen
+const toModelResult = (a, itemsData) => {
+    const items = itemsData || [];
+    return {
+        questions: items.map((i) => ({
+            question: i.q,
+            answer: i.ans,
+        })),
+        answers: Object.fromEntries(items.map((i, idx) => [idx, i.sel]).filter((p) => p[1])),
+        timeUp: !!a.time_up,
+        taken: a.time_taken,
+        passMark: 0,
+        serverPercent: a.percent,
+        serverPassed: true,
+        score: a.score,
+        penalty: a.negative_mark || 0,
+        showAnswers: true,
+        subjectName: "Model Test - " + a.name,
+    };
+};
 
 function App() {
-    const [auth, setAuth] = useState(getAuth); // { user, token } or null
+    const [auth, setAuth] = useState(getAuth);
     const [screen, setScreen] = useState(initialScreen);
     const [leaveAsk, setLeaveAsk] = useState(false);
     const [topicsFocus, setTopicsFocus] = useState(null);
     const [pending, setPending] = useState("start");
-    const [pendingExam, setPendingExam] = useState(null); // exam a guest wanted to start
+    const [pendingExam, setPendingExam] = useState(null);
 
     const [modelNotice, setModelNotice] = useState(null);
     const [modelError, setModelError] = useState("");
     const [startingModel, setStartingModel] = useState(null);
     const [theme, setTheme] = useState(() => {
         try {
-            return (
-                localStorage.getItem("theme") ||
-                (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-            );
+            return localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         } catch {
             return "light";
         }
     });
 
-    // site settings (public API)
     const [site, setSite] = useState(DEFAULT_SITE);
-
-    // landing page data (public API)
     const [catalog, setCatalog] = useState({ loading: true, error: "", subjects: [], stats: null });
 
-    // exam in progress / results
     const [session, setSession] = useState(null);
     const [starting, setStarting] = useState(false);
     const [startError, setStartError] = useState("");
@@ -125,19 +128,17 @@ function App() {
     const submittingRef = useRef(false);
 
     const token = auth ? auth.token : null;
-    const currentUser = auth ? auth.user : null; // ✅ удобнее accessible
+    const currentUser = auth ? auth.user : null;
 
     useEffect(() => {
         document.documentElement.dataset.theme = theme;
         try { localStorage.setItem("theme", theme); } catch { }
     }, [theme]);
 
-    // remember the current page, so a refresh keeps you here
     useEffect(() => {
         try { sessionStorage.setItem(SCREEN_KEY, screen); } catch { }
     }, [screen]);
 
-    // an exam cannot be resumed, so warn before the page is refreshed or closed
     useEffect(() => {
         if (screen !== "quiz") return undefined;
         const warn = (e) => {
@@ -169,7 +170,6 @@ function App() {
         }
     };
 
-    // load on start, and again after login/logout (to get the "completed" flags)
     useEffect(() => {
         loadCatalog();
     }, [token]);
@@ -195,7 +195,6 @@ function App() {
         go("topics");
     };
 
-    /* ---------- start an exam ---------- */
     const startExam = async (examId, tok) => {
         setStarting(true);
         setStartError("");
@@ -215,7 +214,6 @@ function App() {
         setStarting(false);
     };
 
-    /* ---------- start a model test ---------- */
     const startModel = async (id) => {
         if (!auth) {
             setScreen("login");
@@ -237,7 +235,6 @@ function App() {
         setStartingModel(null);
     };
 
-    // Start button: guests must sign up first (we remember which exam they wanted)
     const handleStart = (examId) => {
         if (!auth) {
             setPendingExam(examId);
@@ -248,14 +245,13 @@ function App() {
         startExam(examId, auth.token);
     };
 
-    // after sign up OR login
     const handleLogin = (user, tok) => {
         setAuth({ user, token: tok });
         window.scrollTo({ top: 0 });
 
         if (isAdminUser(user)) {
             setPendingExam(null);
-            forgetAdminPage(); // a fresh login starts on the dashboard
+            forgetAdminPage();
             setScreen("admin");
             return;
         }
@@ -263,37 +259,65 @@ function App() {
         if (pendingExam) {
             const id = pendingExam;
             setPendingExam(null);
-            startExam(id, tok); // go straight into the exam they chose
+            startExam(id, tok);
         }
     };
 
-    /* ---------- finish an exam (server checks the answers) ---------- */
-    const sendSubmit = async (data) => {
+      const sendSubmit = async (data) => {
         if (submittingRef.current) return;
         submittingRef.current = true;
         setSubmitting(true);
         setSubmitError("");
         try {
-            const body = await apiRequest("/student/exams/" + data.examId + "/submit", {
+            const endpoint = data.model 
+                ? `/student/model-tests/${data.examId}/submit` 
+                : `/student/exams/${data.examId}/submit`;
+
+            const body = await apiRequest(endpoint, {
                 method: "POST",
                 token,
                 body: data.body,
             });
-            setResult(toResult(getData(body)));
+            
+            const resData = getData(body);
+
+            // 👇 সাবমিটিং মডাল বন্ধ করা হলো
+            setSubmitting(false);
+            submittingRef.current = false;
+
+            if (data.model) {
+                setSession(null);
+                setPendingSubmit(null);
+                
+                setModelNotice({
+                    title: data.title,
+                    message: resData.published 
+                        ? "Submitted! Your result is ready in the Student Panel." 
+                        : (resData.message || `Submitted! Result on ${resData.publish_on}`)
+                });
+                setScreen("model");
+                window.scrollTo({ top: 0 });
+                return;
+            }
+
+            setResult(toResult(resData));
             setPendingSubmit(null);
             setSession(null);
             setScreen("result");
             window.scrollTo({ top: 0 });
             loadCatalog();
+
         } catch (err) {
+            // 👇 এরর হলেও সাবমিটিং মডাল বন্ধ হবে
+            setSubmitting(false);
+            submittingRef.current = false;
+
             if (err.status === 401) forceLogout();
             else if (err.status === 409) {
                 setPendingSubmit(null);
                 setSubmitError(err.message);
             } else setSubmitError(err.message);
         }
-        submittingRef.current = false;
-        setSubmitting(false);
     };
 
     const handleFinish = (answers, timeUp, taken) => {
@@ -311,7 +335,6 @@ function App() {
         sendSubmit(data);
     };
 
-    /* ---------- navigation ---------- */
     const navigate = (target) => {
         if (target !== "model") {
             setModelNotice(null);
@@ -331,6 +354,7 @@ function App() {
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
     };
+
     const go = (target) => {
         if (screen === "quiz") {
             setPending(target);
@@ -339,6 +363,7 @@ function App() {
             navigate(target);
         }
     };
+
     const confirmLeave = () => {
         setLeaveAsk(false);
         setSession(null);
@@ -356,11 +381,20 @@ function App() {
         window.scrollTo({ top: 0 });
     };
 
-    // open one past result (Student Panel -> View)
-    const openRecord = async (id) => {
+    const openRecord = async (id, isModel = false) => {
         try {
-            const body = await apiRequest("/student/attempts/" + id, { token });
-            setRecord(toResult(getData(body)));
+            const endpoint = isModel 
+                ? "/student/model-attempts/" + id 
+                : "/student/attempts/" + id;
+
+            const body = await apiRequest(endpoint, { token });
+            const resData = getData(body);
+
+            if (isModel) {
+                setRecord(toModelResult({ ...resData.attempt, items: resData.items }, resData.items));
+            } else {
+                setRecord(toResult(resData));
+            }
             setScreen("detail");
             window.scrollTo({ top: 0 });
         } catch (err) {
@@ -369,7 +403,6 @@ function App() {
         }
     };
 
-    /* ---------- Admin dashboard (own header, sidebar, footer) ---------- */
     if (screen === "admin" && auth && isAdminUser(auth.user)) {
         return (
             <AdminPanel
@@ -427,7 +460,6 @@ function App() {
                     />
                 )}
 
-
                 {screen === "model" && (
                     <ModelTestsScreen
                         token={token}
@@ -447,7 +479,7 @@ function App() {
                         <StudentPanel
                             user={auth && auth.user}
                             token={token}
-                            onOpen={openRecord}
+                            onOpen={(id) => openRecord(id, false)}
                             onStart={() => go("start")}
                             onLogin={() => go("login")}
                             onUnauthorized={forceLogout}
@@ -477,6 +509,7 @@ function App() {
 
                 {screen === "about" && <AboutScreen site={site} onBack={() => go("start")} onContact={() => go("contact")} />}
                 {screen === "contact" && <ContactScreen site={site} onBack={() => go("start")} />}
+                
                 {screen === "quiz" && session && (
                     <QuizScreen
                         questions={session.questions}

@@ -12,7 +12,6 @@ const fmtD = (iso) => {
     );
 };
 
-// Backend er field name onujayi fallback deya ache
 const getStudentId = (u) => u?.student_id ?? u?.studentId ?? u?.id ?? "";
 
 function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized }) {
@@ -25,8 +24,11 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
         setLoading(true);
         setError("");
         try {
-            const body = await apiRequest("/student/attempts", { token });
-            setRecords(pickList(body));
+            // 👇 এখানে মডেল টেস্টের হিস্ট্রি এন্ডপয়েন্ট ব্যবহার করা হলো
+            const body = await apiRequest("/student/model-attempts", { token });
+            // pickList আপনার utils এ থাকলে ভালো, না থাকলে body.data.attempts ব্যবহার করুন
+            const list = body?.data?.attempts || pickList(body) || [];
+            setRecords(list);
         } catch (err) {
             if (err.status === 401) onUnauthorized();
             else setError(err.message);
@@ -79,28 +81,34 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
         );
     }
 
-    const subjectNames = [...new Set(records.map((r) => r.subject))];
-    const list = records.filter((r) => subject === "all" || r.subject === subject);
-    const n = list.length;
-    const avg = n ? Math.round(list.reduce((a, r) => a + r.percent, 0) / n) : 0;
-    const best = n ? Math.max(...list.map((r) => r.percent)) : 0;
-    const passRate = n ? Math.round((list.filter((r) => r.passed).length / n) * 100) : 0;
+    // ফিল্টার লজিক
+    const subjectNames = [...new Set(records.map((r) => r.name))]; // মডেল টেস্টে subject এর বদলে name
+    const list = records.filter((r) => subject === "all" || r.name === subject);
+    
+    // শুধুমাত্র পাবলিশড রেজাল্টগুলো ফিল্টার করে নেওয়া
+    const publishedRecords = list.filter((r) => r.published);
+    
+    const n = publishedRecords.length;
+    const avg = n ? Math.round(publishedRecords.reduce((a, r) => a + r.percent, 0) / n) : 0;
+    const best = n ? Math.max(...publishedRecords.map((r) => r.percent)) : 0;
+    const passRate = n ? Math.round((publishedRecords.filter((r) => r.percent >= 40).length / n) * 100) : 0; // ধরে নিচ্ছি ৪০% পাশ মার্ক
 
-    // Chart data (last 10 exam, purono theke notun)
-    const chartData = [...list]
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
+    // Chart Data
+    const chartData = [...publishedRecords]
+        .sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at))
         .slice(-10)
-        .map((r, i, arr) => ({
-            label: "Ex " + (n - arr.length + i + 1),
-            value: r.percent,
-            title: r.subject + " · " + r.exam,
+        .map((r, i) => ({
+            label: "Test " + (i + 1),
+            value: r.percent || 0,
+            title: r.name,
         }));
 
+    // Subject-wise performance (মডেল টেস্টে যেহেতু একক বিষয় থাকে, তাই নাম দিয়েই গ্রুপ করা হলো)
     const bySubject = Object.values(
-        list.reduce((m, r) => {
-            const x = m[r.subject] || (m[r.subject] = { name: r.subject, icon: r.icon, color: r.color, n: 0, sum: 0 });
+        publishedRecords.reduce((m, r) => {
+            const x = m[r.name] || (m[r.name] = { name: r.name, icon: "🏅", color: "#3346c9", n: 0, sum: 0 });
             x.n++;
-            x.sum += r.percent;
+            x.sum += r.percent || 0;
             return m;
         }, {})
     );
@@ -114,19 +122,19 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
                         Results of <b>{user.name}</b>
                     </p>
                     <p className="sub" style={{marginTop: 4}}>
-                       Student ID:   {getStudentId(user)}
+                       Student ID: {getStudentId(user)}
                     </p>
                 </div>
                 <div className="sp-filters">
                     <select className="field" value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Subject">
-                        <option value="all">All subjects</option>
+                        <option value="all">All Tests</option>
                         {subjectNames.map((x) => <option key={x} value={x}>{x}</option>)}
                     </select>
                 </div>
             </div>
 
             <div className="stats panel">
-                <div><b>{n}</b><small>Exams taken</small></div>
+                <div><b>{n}</b><small>Tests taken</small></div>
                 <div><b>{avg}%</b><small>Average score</small></div>
                 <div><b style={{ color: "var(--ok)" }}>{best}%</b><small>Best score</small></div>
                 <div><b>{passRate}%</b><small>Pass rate</small></div>
@@ -155,17 +163,31 @@ function StudentPanel({ user, token, onOpen, onStart, onLogin, onUnauthorized })
                 {list.map((r) => (
                     <div className="rec" key={r.id}>
                         <div className="rec-main">
-                            <b>{r.icon} {r.subject} · {r.exam}</b>
-                            <small>{fmtD(r.date)} · {fmtT(r.time_taken)}</small>
+                            <b>🏅 {r.name}</b>
+                            <small>
+                                {r.submitted_at ? fmtD(r.submitted_at) : "Not submitted"} · {fmtT(r.time_taken || 0)}
+                            </small>
                         </div>
                         <div className="rec-score">
-                            <b>{r.correct}/{r.total}</b>
-                            <span className={"badge " + (r.passed ? "pass" : "fail")}>
-                                {r.percent}% · {r.passed ? "Passed" : "Failed"}
-                            </span>
+                            {r.published ? (
+                                <>
+                                    <b>{r.correct}/{r.total}</b>
+                                    <span className={"badge pass"}>
+                                        {r.percent}% · Rank {r.rank} 
+                                    </span>
+                                </>
+                            ) : (
+                                <span className="badge gray">
+                                    {r.status === "in_progress" ? "In Progress" : "Result Pending"}
+                                </span>
+                            )}
                         </div>
                         <div className="rec-act">
-                            <button className="btn" onClick={() => onOpen(r.id)}>View</button>
+                            {r.published ? (
+                                <button className="btn" onClick={() => onOpen(r.id)}>View</button>
+                            ) : (
+                                <button className="btn ghost" disabled>Wait</button>
+                            )}
                         </div>
                     </div>
                 ))}
