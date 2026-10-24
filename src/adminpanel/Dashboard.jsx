@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { apiRequest, getData } from "./api";
 
+const num = (v) => (typeof v === "number" ? v.toLocaleString() : v);
+
 function Dashboard({ user, token, go, onUnauthorized }) {
     const [stats, setStats] = useState(null);
     const [error, setError] = useState("");
@@ -24,6 +26,7 @@ function Dashboard({ user, token, go, onUnauthorized }) {
     }, []);
 
     const s = stats || {};
+
     const cards = [
         { label: "Subjects", value: s.subjects, icon: "📚", c: "#7c3aed" },
         { label: "Exams", value: s.exams, icon: "📝", c: "#0ea5e9" },
@@ -31,6 +34,20 @@ function Dashboard({ user, token, go, onUnauthorized }) {
         { label: "Users", value: s.users, icon: "👤", c: "#14b8a6" },
         { label: "Active users", value: s.active_users, icon: "✅", c: "#22c55e" },
         { label: "Admins", value: s.admins, icon: "🛡️", c: "#ec4899" },
+        {
+            label: "Model tests" + (s.model_tests_on !== undefined ? " (" + s.model_tests_on + " On)" : ""),
+            value: s.model_tests,
+            icon: "🏅",
+            c: "#6366f1",
+        },
+        { label: "Model attempts", value: s.model_attempts, icon: "🏆", c: "#f97316" },
+        {
+            label: "PYQ solutions" + (s.pyq_shown !== undefined ? " (" + s.pyq_shown + " shown)" : ""),
+            value: s.pyq_solutions,
+            icon: "🗂️",
+            c: "#06b6d4",
+        },
+        { label: "PYQ exams", value: s.pyq_exams, icon: "📋", c: "#84cc16" },
     ];
 
     const per = s.per_subject || [];
@@ -40,7 +57,9 @@ function Dashboard({ user, token, go, onUnauthorized }) {
         { id: "subjects", label: "Add subject", icon: "📚" },
         { id: "exams", label: "Add exam", icon: "📝" },
         { id: "questions", label: "Add question", icon: "❓" },
-        { id: "import", label: "Import JSON", icon: "⬆️" },
+        { id: "modeltests", label: "Model tests", icon: "🏅" },
+        { id: "pyq", label: "Add PYQ solution", icon: "🗂️" },
+        { id: "import", label: "Import data", icon: "⬆️" },
         { id: "users", label: "Manage users", icon: "👤" },
     ];
 
@@ -65,7 +84,7 @@ function Dashboard({ user, token, go, onUnauthorized }) {
                     <div className="adm-stat" key={c.label} style={{ "--c": c.c }}>
                         <div className="adm-stat-ico">{c.icon}</div>
                         <div>
-                            <b>{loading ? "..." : c.value === undefined ? "-" : c.value}</b>
+                            <b>{loading ? "..." : c.value === undefined ? "-" : num(c.value)}</b>
                             <small>{c.label}</small>
                         </div>
                     </div>

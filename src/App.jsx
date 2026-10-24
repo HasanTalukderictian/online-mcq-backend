@@ -263,12 +263,14 @@ function App() {
         }
     };
 
-      const sendSubmit = async (data) => {
+        const sendSubmit = async (data) => {
         if (submittingRef.current) return;
         submittingRef.current = true;
         setSubmitting(true);
         setSubmitError("");
+        
         try {
+            // 👇 এক্সাম নাকি মডেল টেস্ট তার ভিত্তিতে আলাদা এন্ডপয়েন্ট
             const endpoint = data.model 
                 ? `/student/model-tests/${data.examId}/submit` 
                 : `/student/exams/${data.examId}/submit`;
@@ -281,25 +283,36 @@ function App() {
             
             const resData = getData(body);
 
-            // 👇 সাবমিটিং মডাল বন্ধ করা হলো
             setSubmitting(false);
             submittingRef.current = false;
 
+            // ==========================================
+            // 👇 ১. যদি এটি Model Test হয়
+            // ==========================================
             if (data.model) {
                 setSession(null);
                 setPendingSubmit(null);
                 
-                setModelNotice({
-                    title: data.title,
-                    message: resData.published 
-                        ? "Submitted! Your result is ready in the Student Panel." 
-                        : (resData.message || `Submitted! Result on ${resData.publish_on}`)
-                });
+                // মডেল টেস্টে resData.attempt এবং published চেক করা হচ্ছে
+                if (resData.published) {
+                    setModelNotice({
+                        title: data.title,
+                        message: "Submitted! Your result is ready in the Student Panel."
+                    });
+                } else {
+                    setModelNotice({
+                        title: data.title,
+                        message: resData.message || `Submitted! Result on ${resData.publish_on}`
+                    });
+                }
                 setScreen("model");
                 window.scrollTo({ top: 0 });
                 return;
             }
 
+            // ==========================================
+            // 👇 ২. যদি এটি সাধারণ Subject Exam হয় (সাথে সাথেই রেজাল্ট দেখাবে)
+            // ==========================================
             setResult(toResult(resData));
             setPendingSubmit(null);
             setSession(null);
@@ -308,7 +321,6 @@ function App() {
             loadCatalog();
 
         } catch (err) {
-            // 👇 এরর হলেও সাবমিটিং মডাল বন্ধ হবে
             setSubmitting(false);
             submittingRef.current = false;
 

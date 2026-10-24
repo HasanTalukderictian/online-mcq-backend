@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Hero from "./Hero";
 import SubjectShowcase from "./SubjectShowcase";
@@ -12,6 +11,7 @@ import NoticeBar from "./NoticeBar";
 const WA_NUMBER = "8801768712230";
 const WA_TEXT = "আসসালামু আলাইকুম, আমি Online MCQ Test সম্পর্কে জানতে চাই।";
 const WA_LINK = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_TEXT)}`;
+const WA_COMMUNITY_LINK = "https://chat.whatsapp.com/DW3mbvP4Pvl3e6g4h1KU6N";
 
 const WhatsAppIcon = ({ size = 28 }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -240,7 +240,7 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
 }
 
 // =============================
-// Payment Section
+// Payment Section + WhatsApp Community
 // =============================
 function PaymentSection() {
     const paymentMethods = [
@@ -315,7 +315,6 @@ function PaymentSection() {
                     padding:20px 22px;
                     border-radius:12px;
                     box-sizing:border-box; min-width:0;
-                    /* brand color ta --card er upor mishe jay: light e pastel, dark e dark tint */
                     background:color-mix(in srgb, var(--pc) 10%, var(--card, #ffffff));
                     border:1px solid color-mix(in srgb, var(--pc) 28%, transparent);
                 }
@@ -346,6 +345,45 @@ function PaymentSection() {
                     font-size:14px; line-height:1.6; text-align:center;
                 }
 
+                /* WhatsApp Community Section Styles */
+                .wa-community-box {
+                    margin-top: 24px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    padding: 20px;
+                    border-radius: 12px;
+                    background: color-mix(in srgb, #25D366 8%, var(--card, #ffffff));
+                    border: 1px dashed #25D366;
+                    text-align: center;
+                }
+                .wa-community-box p {
+                    margin: 0;
+                    font-size: 15px;
+                    font-weight: 500;
+                    color: var(--ink, #1f2937);
+                }
+                .wa-join-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: #25D366;
+                    color: #fff;
+                    padding: 10px 20px;
+                    border-radius: 999px;
+                    font-size: 15px;
+                    font-weight: 700;
+                    text-decoration: none;
+                    transition: transform .2s ease, box-shadow .2s ease;
+                    box-shadow: 0 4px 12px rgba(37,211,102,.3);
+                }
+                .wa-join-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(37,211,102,.45);
+                }
+
                 @media (max-width:720px){
                     .pay-wrap{ padding:24px 16px; }
                     .pay-title{ font-size:20px; }
@@ -354,6 +392,7 @@ function PaymentSection() {
                     .pay-grid{ grid-template-columns:1fr; }
                     .pay-number{ font-size:16px; }
                     .pay-note{ font-size:12px; }
+                    .wa-community-box p { font-size: 14px; }
                 }
             `}</style>
 
@@ -382,6 +421,15 @@ function PaymentSection() {
 
             <div className="pay-note">
                 <strong>আপনার সামান্য সহযোগিতাও আমাদের জন্য অনেক বড় অনুপ্রেরণা।</strong>
+            </div>
+
+            {/* ===== WhatsApp Community Join Section ===== */}
+            <div className="wa-community-box">
+                <p>আমাদের WhatsApp Community-তে যুক্ত হতে চাইলে লিংকে ক্লিক করুন</p>
+                <a href={WA_COMMUNITY_LINK} target="_blank" rel="noopener noreferrer" className="wa-join-btn">
+                    <WhatsAppIcon size={20} />
+                    Join Community
+                </a>
             </div>
         </div>
     );

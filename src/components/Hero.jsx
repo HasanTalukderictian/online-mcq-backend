@@ -1,24 +1,20 @@
 import { useEffect, useState } from "react";
-import heroImage from "../assets/Hero.jpg"; // src/assets/Hero.jpg
+import heroImage from "../assets/Hero.jpg"; 
 
 const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
-// counts up from 0 to the real number
 function useCount(target, run) {
     const [n, setN] = useState(0);
-
     useEffect(() => {
         if (!run) return undefined;
-
         const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (reduce || !target) {
             setN(target);
             return undefined;
         }
-
         let raf;
         const start = performance.now();
         const duration = 900;
@@ -28,10 +24,8 @@ function useCount(target, run) {
             if (p < 1) raf = requestAnimationFrame(tick);
         };
         raf = requestAnimationFrame(tick);
-
         return () => cancelAnimationFrame(raf);
     }, [target, run]);
-
     return n;
 }
 
@@ -71,11 +65,15 @@ function Hero({ stats, loading, site = {} }) {
                     <button className="hbtn main" onClick={() => scrollTo("exam-section")}>▶ Start quick quiz</button>
                     <button className="hbtn" onClick={() => scrollTo("subjects-showcase")}>Browse exams bank</button>
                 </div>
-                <div className="hero-stats">
+                
+                {/* 👇 এখানে নতুন স্ট্যাটগুলো যোগ করা হলো */}
+                <div className="hero-stats" style={{ flexWrap: "wrap" }}>
                     <Stat value={s.students} label="Students" loading={loading} />
                     <Stat value={s.subjects} label="Subjects" loading={loading} />
                     <Stat value={s.exams} label="Exams" loading={loading} />
                     <Stat value={s.questions} label="Questions" loading={loading} />
+                    <Stat value={s.model_tests} label="Model Tests" loading={loading} />
+                    <Stat value={s.pyq_solutions} label="PYQ Solved" loading={loading} />
                 </div>
             </div>
         </section>
