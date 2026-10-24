@@ -198,22 +198,39 @@ function PyqAdmin({ token, onUnauthorized }) {
                 body: bodyOf(form),
             });
 
-            if (addNext && !editId) {
-                // keep exam details, clear the rest, go on with the next question
-                setForm({
-                    ...EMPTY,
-                    images: [""],
-                    subject_id: form.subject_id,
-                    exam_name: form.exam_name,
-                    exam_date: form.exam_date,
-                    q_no: nextNo(form.q_no), // প্রশ্ন নম্বর অটো বাড়বে (যেমন: ১ থাকলে ২ হবে)
-                });
-                setNote({ type: "ok", text: "Saved. Now add the next question for this exam." });
-                if (overlayRef.current) overlayRef.current.scrollTop = 0;
-            } else {
-                setForm(null);
-                setNote({ type: "ok", text: editId ? "Solution updated." : "Solution added." });
-            }
+           if (addNext && !editId) {
+    setForm({
+        ...EMPTY,
+        images: [""],
+
+        // আগের Exam Name ডিফল্ট থাকবে
+        exam_name: form.exam_name,
+
+        // আগের Exam Date ডিফল্ট থাকবে
+        exam_date: form.exam_date,
+
+        // আগের Subject ডিফল্ট থাকবে
+        subject_id: form.subject_id,
+
+        // আগের Question No. থেকে পরবর্তী নম্বর হবে
+        q_no: nextNo(form.q_no),
+    });
+
+    setNote({
+        type: "ok",
+        text: "Saved. Now add the next question for this exam.",
+    });
+
+    if (overlayRef.current) {
+        overlayRef.current.scrollTop = 0;
+    }
+} else {
+    setForm(null);
+    setNote({
+        type: "ok",
+        text: editId ? "Solution updated." : "Solution added.",
+    });
+}
             load();
         } catch (err) {
             if (unauthorized(err)) return;
@@ -371,9 +388,20 @@ function PyqAdmin({ token, onUnauthorized }) {
             </div>
 
             {form && (
-                <div className="tp-overlay" ref={overlayRef} onClick={() => !saving && setForm(null)}>
+                <div className="tp-overlay" ref={overlayRef}>
                     <div className="tp-modal wide" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-                        <h3>{editId ? "Edit solution" : "Add solution"}</h3>
+                        {/* X Icon added here */}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+                            <h3 style={{ margin: 0 }}>{editId ? "Edit solution" : "Add solution"}</h3>
+                            <button 
+                                type="button" 
+                                onClick={() => !saving && setForm(null)} 
+                                style={{ background: "transparent", border: "none", fontSize: "20px", cursor: "pointer", color: "var(--muted)", padding: "0 5px" }}
+                                aria-label="Close"
+                            >
+                                ✕
+                            </button>
+                        </div>
 
                         {formError && <div className="adm-note bad">{formError}</div>}
 

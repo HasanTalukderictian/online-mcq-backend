@@ -73,7 +73,7 @@ function Hero({ stats, loading, site = {} }) {
                     <Stat value={s.exams} label="Exams" loading={loading} />
                     <Stat value={s.questions} label="Questions" loading={loading} />
                     <Stat value={s.model_tests} label="Model Tests" loading={loading} />
-                    <Stat value={s.pyq_solutions} label="PYQ Solved" loading={loading} />
+                    <Stat value={s.pyq_solutions} label="Previous Question Solution" loading={loading} />
                 </div>
             </div>
         </section>
