@@ -13,11 +13,20 @@ const readSaved = () => {
     }
 };
 
-// YouTube link -> video id (other links open in a new tab)
+// YouTube link -> video id
 const youtubeId = (url) => {
     if (!url) return "";
     const m = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/);
     return m ? m[1] : "";
+};
+
+// Helper to strip HTML tags safely for the topic card preview
+const stripHtml = (html) => {
+    if (!html) return "";
+    // Replace block tags with space, then remove remaining tags
+    const withSpaces = html.replace(/<\/?(p|div|br|li|ul|ol|h[1-6])[^>]*>/gi, " ");
+    const doc = new DOMParser().parseFromString(withSpaces, 'text/html');
+    return doc.body.textContent || "";
 };
 
 function Video({ url, title }) {
@@ -89,12 +98,18 @@ function TopicsScreen({ initialSubjectId, onBack }) {
     const showAll = () => setShown(Object.fromEntries(detail.questions.map((q) => [q.id, true])));
     const hideAll = () => setShown({});
 
-    /* ---------- one topic ---------- */
+    /* ---------- one topic (ARTICLE VIEW) ---------- */
     if (topicId) {
         const t = detail.topic;
         return (
-            <section className="tpc-wrap">
-                                
+            <section className="tpc-wrap tpc-article-wrap">
+                <button
+                    type="button"
+                    className="btn ghost tpc-back-btn"
+                    onClick={() => setTopicId(null)}
+                >
+                    ← Back to topics
+                </button>
 
                 {detail.loading && <div className="panel loading-box">Loading topic...</div>}
 
@@ -106,76 +121,106 @@ function TopicsScreen({ initialSubjectId, onBack }) {
                 )}
 
                 {t && (
-                    <>
-                        <header className="tpc-head">
-                            <span className="eyebrow">{t.icon} {t.subject}</span>
-                            <h1>{t.title}</h1>
-                            {t.description && <p>{t.description}</p>}
-                            <Video url={t.video_url} title={t.title} />
+                    <article className="tpc-article">
+                        {/* Article Header - AI style */}
+                        <header className="tpc-article-head">
+                            <span className="tpc-eyebrow">{t.icon} {t.subject}</span>
+                            <h1 className="tpc-title">{t.title}</h1>
+                            <div className="tpc-meta">
+                                <span>Last Updated: Today</span>
+                                <div className="tpc-meta-actions">
+                                    <span title="Comments">💬</span>
+                                    <span title="Edit">✏️</span>
+                                    <span title="More">⋮</span>
+                                </div>
+                            </div>
                         </header>
 
-                        {detail.questions.length === 0 ? (
-                            <div className="panel loading-box">Questions will be added soon.</div>
-                        ) : (
-                            <>
-                                <div className="tpc-tools">
-                                    <b>{detail.questions.length} previous year question(s)</b>
-                                    <span>
-                                        <button type="button" className="btn ghost" onClick={showAll}>Show all solutions</button>{" "}
-                                        <button type="button" className="btn ghost" onClick={hideAll}>Hide all</button>
-                                    </span>
-                                </div>
+                        <div className="tpc-divider" />
 
-                                {detail.questions.map((q, i) => {
-                                    const open = !!shown[q.id];
-                                    return (
-                                        <article className="tpc-q" key={q.id}>
-                                            <div className="tpc-q-head">
-                                                <span className="tpc-num">{i + 1}</span>
-                                                {q.source && <span className="tpc-tag">{q.source}</span>}
-                                                {q.year && <span className="tpc-tag year">{q.year}</span>}
-                                            </div>
+                        {/* Article Body */}
+                        <div className="tpc-content">
+                            {t.video_url && <Video url={t.video_url} title={t.title} />}
+                            
+                            {t.description && (
+                                <div 
+                                    className="tpc-rich-text" 
+                                    dangerouslySetInnerHTML={{ __html: t.description }} 
+                                />
+                            )}
+                        </div>
 
-                                            <p className="tpc-q-text">{q.question}</p>
+                        <div className="tpc-divider" />
 
-                                            {q.options && q.options.length > 0 && (
-                                                <ul className="tpc-opts">
-                                                    {q.options.map((o, k) => (
-                                                        <li key={k} className={open && q.answer === o ? "right" : ""}>
-                                                            <b>{LETTERS[k]}</b>
-                                                            <span>{o}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
+                        {/* Questions Section */}
+                        <div className="tpc-questions-section">
+                            {detail.questions.length === 0 ? (
+                                <div className="tpc-muted">Questions will be added soon.</div>
+                            ) : (
+                                <>
+                                    <div className="tpc-tools">
+                                        <h2>{detail.questions.length} Previous Year Questions</h2>
+                                        <span className="tpc-tool-btns">
+                                            <button type="button" className="btn ghost sm" onClick={showAll}>Show all</button>{" "}
+                                            <button type="button" className="btn ghost sm" onClick={hideAll}>Hide all</button>
+                                        </span>
+                                    </div>
 
-                                            <button type="button" className="btn ghost" onClick={() => toggle(q.id)}>
-                                                {open ? "Hide answer & solution" : "Show answer & solution"}
-                                            </button>
+                                    <div className="tpc-q-list">
+                                        {detail.questions.map((q, i) => {
+                                            const open = !!shown[q.id];
+                                            return (
+                                                <div className="tpc-q" key={q.id}>
+                                                    <div className="tpc-q-head">
+                                                        <span className="tpc-num">{i + 1}</span>
+                                                        <div className="tpc-q-tags">
+                                                            {q.source && <span className="tpc-tag">{q.source}</span>}
+                                                            {q.year && <span className="tpc-tag year">{q.year}</span>}
+                                                        </div>
+                                                    </div>
 
-                                            {open && (
-                                                <div className="tpc-sol">
-                                                    {q.answer && (
-                                                        <div className="tpc-ans">✅ <b>Answer:</b> {q.answer}</div>
+                                                    <p className="tpc-q-text">{q.question}</p>
+
+                                                    {q.options && q.options.length > 0 && (
+                                                        <ul className="tpc-opts">
+                                                            {q.options.map((o, k) => (
+                                                                <li key={k} className={open && q.answer === o ? "right" : ""}>
+                                                                    <b>{LETTERS[k]}</b>
+                                                                    <span>{o}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
                                                     )}
-                                                    {q.solution && (
-                                                        <div className="tpc-sol-text">
-                                                            <b>Solution</b>
-                                                            <p>{q.solution}</p>
+
+                                                    <button type="button" className="btn ghost sm" onClick={() => toggle(q.id)}>
+                                                        {open ? "Hide answer & solution" : "Show answer & solution"}
+                                                    </button>
+
+                                                    {open && (
+                                                        <div className="tpc-sol">
+                                                            {q.answer && (
+                                                                <div className="tpc-ans">✅ <b>Answer:</b> {q.answer}</div>
+                                                            )}
+                                                            {q.solution && (
+                                                                <div className="tpc-sol-text">
+                                                                    <b>Solution</b>
+                                                                    <p>{q.solution}</p>
+                                                                </div>
+                                                            )}
+                                                            <Video url={q.video_url} title="Solution video" />
+                                                            {!q.answer && !q.solution && !q.video_url && (
+                                                                <p className="tpc-muted">The solution will be added soon.</p>
+                                                            )}
                                                         </div>
                                                     )}
-                                                    <Video url={q.video_url} title="Solution video" />
-                                                    {!q.answer && !q.solution && !q.video_url && (
-                                                        <p className="tpc-muted">The solution will be added soon.</p>
-                                                    )}
                                                 </div>
-                                            )}
-                                        </article>
-                                    );
-                                })}
-                            </>
-                        )}
-                    </>
+                                            );
+                                        })}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </article>
                 )}
             </section>
         );
@@ -184,11 +229,9 @@ function TopicsScreen({ initialSubjectId, onBack }) {
     /* ---------- topic list ---------- */
     return (
         <section className="tpc-wrap">
-          
-
             <header className="tpc-head">
                 <span className="eyebrow">Study material</span>
-                <h1> Important Topics</h1>
+                <h1>Important Topics</h1>
                 <p>Pick a subject and open a topic to see previous year questions with solutions and videos.</p>
             </header>
 
@@ -228,7 +271,8 @@ function TopicsScreen({ initialSubjectId, onBack }) {
                         {subj && subj.topics.map((t) => (
                             <button type="button" key={t.id} className="tpc-card" onClick={() => setTopicId(t.id)}>
                                 <b>{t.title}</b>
-                                {t.description && <small className="tpc-desc">{t.description}</small>}
+                                {/* Use stripHtml to cleanly show text preview */}
+                                {t.description && <small className="tpc-desc">{stripHtml(t.description)}</small>}
                                 <small>
                                     {t.questions_count} question(s){t.has_video ? " · 🎥 video" : ""}
                                 </small>

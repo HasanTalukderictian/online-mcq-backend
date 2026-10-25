@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { apiRequest, getData } from "./api";
 import TopicQuestions from "./TopicQuestions";
 import "../css/topics.css";
@@ -8,13 +8,15 @@ const EMPTY = { subject_id: "", title: "", description: "", video_url: "", sort_
 function Topics({ token, onUnauthorized }) {
     const [state, setState] = useState({ loading: true, error: "", topics: [], subjects: [] });
     const [subjectFilter, setSubjectFilter] = useState("");
-    const [form, setForm] = useState(null); // null = modal closed
+    const [form, setForm] = useState(null);
     const [editId, setEditId] = useState(null);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState("");
     const [fieldErr, setFieldErr] = useState({});
-    const [note, setNote] = useState(null); // { type: "ok" | "bad", text }
+    const [note, setNote] = useState(null);
     const [openTopic, setOpenTopic] = useState(null);
+    
+    const textareaRef = useRef(null);
 
     const unauthorized = (err) => {
         if (err.status === 401) {
@@ -116,6 +118,27 @@ function Topics({ token, onUnauthorized }) {
 
     const firstError = (key) => (fieldErr[key] && fieldErr[key][0] ? fieldErr[key][0] : "");
 
+    // Helper function to inject HTML tags via toolbar
+    const insertTag = (startTag, endTag = "") => {
+        const el = textareaRef.current;
+        if (!el) return;
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const text = el.value;
+        const before = text.substring(0, start);
+        const selected = text.substring(start, end);
+        const after = text.substring(end, text.length);
+        
+        const newValue = before + startTag + selected + endTag + after;
+        set("description", newValue);
+        
+        // Refocus and set cursor
+        setTimeout(() => {
+            el.focus();
+            el.setSelectionRange(start + startTag.length, end + startTag.length);
+        }, 0);
+    };
+
     if (openTopic) {
         return (
             <TopicQuestions
@@ -200,7 +223,7 @@ function Topics({ token, onUnauthorized }) {
 
             {form && (
                 <div className="tp-overlay" onClick={() => !saving && setForm(null)}>
-                    <div className="tp-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+                    <div className="tp-modal wide" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
                         <h3>{editId ? "Edit topic" : "Add topic"}</h3>
 
                         {formError && <div className="adm-note bad">{formError}</div>}
@@ -222,10 +245,25 @@ function Topics({ token, onUnauthorized }) {
                             {firstError("title") && <small className="tp-err">{firstError("title")}</small>}
                         </label>
 
-                        <label className="tp-field">
-                            <span>Short description (optional)</span>
-                            <textarea className="tp-area" value={form.description} maxLength={2000} onChange={(e) => set("description", e.target.value)} />
-                        </label>
+                        <div className="tp-field">
+                            <span>Description (Rich Text) *</span>
+                            {/* Rich Text Toolbar */}
+                            <div className="tp-toolbar">
+                                <button type="button" onClick={() => insertTag("<b>", "</b>")} title="Bold"><b>B</b></button>
+                                <button type="button" onClick={() => insertTag("<i>", "</i>")} title="Italic"><i>I</i></button>
+                                <button type="button" onClick={() => insertTag("<h3>", "</h3>")} title="Heading">H3</button>
+                                <button type="button" onClick={() => insertTag("<ul>\n  <li>", "</li>\n</ul>")} title="Bullet List">• List</button>
+                                <button type="button" onClick={() => insertTag("<p>", "</p>")} title="Paragraph">¶</button>
+                                <button type="button" onClick={() => insertTag("\n")} title="Line Break">↵</button>
+                            </div>
+                            <textarea 
+                                ref={textareaRef}
+                                className="tp-area tall" 
+                                value={form.description} 
+                                onChange={(e) => set("description", e.target.value)} 
+                                placeholder="Write content here. Use toolbar for bold, lists, etc."
+                            />
+                        </div>
 
                         <label className="tp-field">
                             <span>Topic video URL (optional)</span>
