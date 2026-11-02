@@ -26,10 +26,17 @@ function QuizScreen({ questions, subjectName, candidate, timeLimit, onFinish }) 
   const answered = Object.keys(answers).length;
   const submit = () => onFinish(answers, false, timeLimit - left);
 
-  // প্যালেট থেকে প্রশ্নে ক্লিক করার সময় চেক করা হবে
+  // 🔒 একবার অপশন সিলেক্ট করলে আর বদলানো যাবে না
+  const pickOption = (option) => {
+    setAnswers((prev) => {
+      if (prev[cur] !== undefined) return prev; // আগে দেওয়া হয়েছে → ignore
+      return { ...prev, [cur]: option };
+    });
+  };
+
+  // প্যালেট থেকে প্রশ্নে ক্লিক করার সময় চেক করা হবে
   const jumpTo = (index) => {
-    // 👇 যদি ক্লিক করা প্রশ্নটি বর্তমান প্রশ্নের চেয়ে বড় হয় (সামনের দিকে যায়)
-    // তবে সেটি লক থাকবে। শুধু আগের প্রশ্নে ফেরা যাবে।
+    // 👇 সামনের প্রশ্নে যাওয়া যাবে না, শুধু আগের প্রশ্নে ফেরা যাবে
     if (index > cur) return;
     setCur(index);
   };
@@ -46,22 +53,62 @@ function QuizScreen({ questions, subjectName, candidate, timeLimit, onFinish }) 
 
       <div className="exam">
         <div className="panel">
-          <div className="bar"><div style={{ width: `${(answered / total) * 100}%` }} /></div>
-          <div className="qno">Question {cur + 1} of {total}</div>
+          <div className="bar">
+            <div style={{ width: `${(answered / total) * 100}%` }} />
+          </div>
+          <div className="qno">
+            Question {cur + 1} of {total}
+          </div>
           <div className="qtext">{q.question}</div>
 
-          {q.options.map((opt, i) => (
-            <button
-              key={opt}
-              className={`opt ${answers[cur] === opt ? "on" : ""}`}
-              onClick={() => setAnswers({ ...answers, [cur]: opt })}
+          {q.options.map((opt, i) => {
+            const isPicked = answers[cur] === opt;
+            const isLocked = answers[cur] !== undefined; // 🔒 উত্তর দেওয়া হয়ে গেছে
+
+            return (
+              <button
+                key={opt}
+                className={`opt ${isPicked ? "on" : ""}`}
+                disabled={isLocked}              /* 🔒 লক */
+                onClick={() => pickOption(opt)}
+                style={
+                  isLocked && !isPicked
+                    ? { opacity: 0.45, cursor: "not-allowed" }
+                    : isLocked
+                    ? { cursor: "not-allowed" }
+                    : {}
+                }
+              >
+                <b>{String.fromCharCode(65 + i)}</b>
+                {opt}
+                {isPicked && <span style={{ marginLeft: "auto", fontWeight: 800 }}>✔</span>}
+              </button>
+            );
+          })}
+
+          {answers[cur] !== undefined && (
+            <div
+              className="mt-wait"
+              style={{
+                marginTop: 10,
+                padding: "10px 12px",
+                borderRadius: 10,
+                background: "var(--paper)",
+                border: "1px dashed var(--line)",
+                color: "var(--muted)",
+                fontSize: 13,
+              }}
             >
-              <b>{String.fromCharCode(65 + i)}</b>{opt}
-            </button>
-          ))}
+              🔒 You have already answered this question. Answers cannot be changed.
+            </div>
+          )}
 
           <div className="nav">
-            <button className="btn ghost" disabled={cur === 0} onClick={() => setCur(cur - 1)}>
+            <button
+              className="btn ghost"
+              disabled={cur === 0}
+              onClick={() => setCur(cur - 1)}
+            >
               Previous
             </button>
             <button
@@ -71,9 +118,13 @@ function QuizScreen({ questions, subjectName, candidate, timeLimit, onFinish }) 
               {marked[cur] ? "Unmark review" : "Mark for review"}
             </button>
             {cur + 1 < total ? (
-              <button className="btn" onClick={() => setCur(cur + 1)}>Next</button>
+              <button className="btn" onClick={() => setCur(cur + 1)}>
+                Next
+              </button>
             ) : (
-              <button className="btn ok" onClick={() => setConfirm(true)}>Submit exam</button>
+              <button className="btn ok" onClick={() => setConfirm(true)}>
+                Submit exam
+              </button>
             )}
           </div>
         </div>
@@ -84,12 +135,14 @@ function QuizScreen({ questions, subjectName, candidate, timeLimit, onFinish }) 
             {questions.map((_, i) => {
               // 👇 সামনের প্রশ্নগুলো প্যালেটে ডিজেবল (Locked) থাকবে
               const isLocked = i > cur;
-              
+
               return (
                 <button
                   key={i}
                   disabled={isLocked}
-                  className={`pal ${marked[i] ? "mark" : answers[i] ? "done" : ""} ${i === cur ? "cur" : ""} ${isLocked ? "locked" : ""}`}
+                  className={`pal ${marked[i] ? "mark" : answers[i] ? "done" : ""} ${
+                    i === cur ? "cur" : ""
+                  } ${isLocked ? "locked" : ""}`}
                   onClick={() => jumpTo(i)}
                   style={isLocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
                 >
@@ -99,11 +152,27 @@ function QuizScreen({ questions, subjectName, candidate, timeLimit, onFinish }) 
             })}
           </div>
           <div className="legend">
-            <span><i style={{ background: "var(--ok)" }} />Answered ({answered})</span>
-            <span><i style={{ background: "var(--warn)" }} />Marked ({Object.values(marked).filter(Boolean).length})</span>
-            <span><i style={{ background: "var(--card)", border: "1px solid var(--line)" }} />Not answered ({total - answered})</span>
+            <span>
+              <i style={{ background: "var(--ok)" }} />
+              Answered ({answered})
+            </span>
+            <span>
+              <i style={{ background: "var(--warn)" }} />
+              Marked ({Object.values(marked).filter(Boolean).length})
+            </span>
+            <span>
+              <i
+                style={{
+                  background: "var(--card)",
+                  border: "1px solid var(--line)",
+                }}
+              />
+              Not answered ({total - answered})
+            </span>
           </div>
-          <button className="btn ok full" onClick={() => setConfirm(true)}>Submit exam</button>
+          <button className="btn ok full" onClick={() => setConfirm(true)}>
+            Submit exam
+          </button>
         </div>
       </div>
 
@@ -113,12 +182,17 @@ function QuizScreen({ questions, subjectName, candidate, timeLimit, onFinish }) 
             <h3>Submit your exam?</h3>
             <p>
               You answered {answered} of {total} questions.
-              {answered < total && ` ${total - answered} unanswered will be counted as wrong.`}
-              {" "}You cannot change answers after submitting.
+              {answered < total &&
+                ` ${total - answered} unanswered will be counted as wrong.`}{" "}
+              You cannot change answers after submitting.
             </p>
             <div className="row">
-              <button className="btn ghost" onClick={() => setConfirm(false)}>Keep working</button>
-              <button className="btn ok" onClick={submit}>Submit</button>
+              <button className="btn ghost" onClick={() => setConfirm(false)}>
+                Keep working
+              </button>
+              <button className="btn ok" onClick={submit}>
+                Submit
+              </button>
             </div>
           </div>
         </div>

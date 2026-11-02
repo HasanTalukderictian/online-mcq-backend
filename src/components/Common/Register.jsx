@@ -2,54 +2,16 @@ import { useState } from "react";
 import { registerRequest, saveAuth } from "../Auth/Auth";
 
 const DEGREES = [
-    "CSE",
-    "ICT",
-    "ICE",
-    "EEE",
-    "ETE",
-    "ECE",
-    "Software Engineering",
-    "Computer Engineering",
-    "Computer Science",
-    "Information Technology",
-    "Information Systems",
-    "Data Science",
-    "Cyber Security",
-    "AI & Machine Learning",
-
-    "BBA",
-    "Management",
-    "Accounting",
-    "Finance",
-    "Marketing",
-    "Economics",
-    "English",
-    "Bangla",
-    "Law",
-    "Education",
-    "Political Science",
-    "Public Administration",
-    "Sociology",
-    "Social Work",
-    "Mathematics",
-    "Statistics",
-    "Physics",
-    "Chemistry",
-    "Biology",
-
-    "Civil Engineering",
-    "Mechanical Engineering",
-    "Electrical Engineering",
-    "Architecture",
-    "Textile Engineering",
-    "Industrial & Production Engineering",
-    "Chemical Engineering",
-
-    "Medicine",
-    "Nursing",
-    "Pharmacy",
-    "Agriculture",
-    "Others"
+    "CSE", "ICT", "ICE", "EEE", "ETE", "ECE", "Software Engineering",
+    "Computer Engineering", "Computer Science", "Information Technology",
+    "Information Systems", "Data Science", "Cyber Security", "AI & Machine Learning",
+    "BBA", "Management", "Accounting", "Finance", "Marketing", "Economics",
+    "English", "Bangla", "Law", "Education", "Political Science",
+    "Public Administration", "Sociology", "Social Work", "Mathematics",
+    "Statistics", "Physics", "Chemistry", "Biology", "Civil Engineering",
+    "Mechanical Engineering", "Electrical Engineering", "Architecture",
+    "Textile Engineering", "Industrial & Production Engineering",
+    "Chemical Engineering", "Medicine", "Nursing", "Pharmacy", "Agriculture", "Others"
 ];
 
 const blank = {
@@ -68,7 +30,6 @@ function Field({ id, label, error, full, children }) {
 }
 
 function Register({ onSuccess, onSwitch, reason }) {
-    // ✅ pendingMsg স্টেটটি এখন সঠিক জায়গায় (কম্পোনেন্টের ভেতরে) আছে
     const [pendingMsg, setPendingMsg] = useState("");
     
     const [form, setForm] = useState(blank);
@@ -130,14 +91,64 @@ function Register({ onSuccess, onSwitch, reason }) {
         }
     };
 
+    // ✅ Registration Complete Message & UI
     if (pendingMsg) {
         return (
             <div className="auth reg">
-                <div className="auth-form" style={{ gridColumn: "1 / -1", textAlign: "center" }}>
-                    <div style={{ fontSize: 48 }}>⏳</div>
-                    <h1>Account created</h1>
-                    <p className="sub">{pendingMsg}</p>
-                    <button type="button" className="btn" onClick={onSwitch}>Go to sign in</button>
+                <div className="auth-form" style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px 20px" }}>
+                    <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
+                    
+                    <h1 style={{ color: "#1f2937", marginBottom: 8 }}>Registration Successful!</h1>
+                    
+                    <p className="sub" style={{ fontSize: 16, marginBottom: 24 }}>
+                        {pendingMsg}
+                    </p>
+
+                    <div style={{ 
+                        background: "#f8fafc", 
+                        border: "1px solid #e2e8f0", 
+                        borderRadius: "8px", 
+                        padding: "20px", 
+                        marginBottom: 24, 
+                        textAlign: "left" 
+                    }}>
+                        <h4 style={{ margin: "0 0 12px 0", color: "#3347d6", fontSize: 15 }}>📋 Next Steps:</h4>
+                        
+                        <ul style={{ margin: 0, paddingLeft: 20, color: "#475569", fontSize: 14, lineHeight: 1.6 }}>
+                            <li style={{ marginBottom: 8 }}>
+                                <b>Admin Approval:</b> Your account is currently under review. Please wait for the admin to approve it.
+                            </li>
+                            <li style={{ marginBottom: 8 }}>
+                                <b>Login Restriction:</b> You cannot log in or take exams until your account is approved.
+                            </li>
+                            <li>
+                                <b>Need Help?</b> If it takes too long, please contact the admin.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+                        {/* Contact Admin Button */}
+                        <a 
+                            href="mailto:hasantalukdercou@gmail.com" 
+                            className="btn full" 
+                            style={{ 
+                                textDecoration: "none", 
+                                textAlign: "center",
+                                background: "#3347d6",
+                                color: "#fff",
+                                borderRadius: "4px",
+                                padding: "12px 24px",
+                                display: "block",
+                                width: "100%",
+                                maxWidth: "300px"
+                            }}
+                        >
+                          Contact Admin
+                        </a>
+
+                        
+                    </div>
                 </div>
             </div>
         );
@@ -174,7 +185,7 @@ function Register({ onSuccess, onSwitch, reason }) {
                             value={form.phone} onChange={set("phone")} />
                     </Field>
 
-                    <Field id="r-email" label="Email" error={fe.email} full>
+                    <Field id="r-email" label="Email" error={fe.email}>
                         <input id="r-email" type="email" className={cls("email")} autoComplete="email" placeholder="you@example.com"
                             value={form.email} onChange={set("email")} />
                     </Field>

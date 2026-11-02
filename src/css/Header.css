@@ -15,8 +15,9 @@
     z-index: 100;
     width: 100%;
     background: var(--h-bg);
-    border-bottom: 1px solid var(--h-line);
-    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+    /* ✅ Header er niche border ebong shadow remove */
+    border-bottom: none;
+    box-shadow: none;
     box-sizing: border-box;
 }
 
@@ -46,7 +47,6 @@
     align-items: center;
     gap: 10px;
     flex: 0 0 auto;
-    /* logo kokhono shrink hobe na */
     min-width: 0;
     padding: 0;
     margin: 0;
@@ -77,7 +77,6 @@
 .site-header .logo-text {
     min-width: 0;
     max-width: 260px;
-    /* khub boro nam hole ... dekhabe */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -96,8 +95,12 @@
     flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-end;
-    gap: 6px;
+    gap: 8px;
+    /* Gap ektu bariye dilam jate text gula ektu faka thake */
 }
+
+
+/* ✅ Menu Button theke Circle & Border Removed */
 
 .site-header .nav-btn {
     flex: 0 0 auto;
@@ -105,27 +108,32 @@
     align-items: center;
     justify-content: center;
     height: 36px;
-    padding: 0 14px;
-    background: var(--h-bg);
-    border: 1px solid var(--h-line);
-    border-radius: 999px;
+    padding: 0 12px;
+    background: transparent;
+    /* Background transparent kora holo */
+    border: none;
+    /* Border remove */
+    border-radius: 6px;
+    /* Hover er jonno halka rounded corner */
     color: var(--h-text);
     font: inherit;
-    font-size: 13.5px;
+    font-size: 14px;
     font-weight: 600;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease;
 }
 
 .site-header .nav-btn:hover {
     background: var(--h-hover);
 }
 
+
+/* Active Menu (Jemon Exam ba Home e thakle) */
+
 .site-header .nav-btn.on {
     background: var(--h-primary-soft);
-    border-color: var(--h-primary);
     color: var(--h-primary);
     font-weight: 700;
 }
@@ -163,6 +171,9 @@
 
 /* ---------- Theme button ---------- */
 
+
+/* ✅ Theme Button theke o Circle Removed */
+
 .site-header .theme-btn {
     flex: 0 0 auto;
     display: grid;
@@ -171,9 +182,11 @@
     height: 36px;
     padding: 0;
     margin-left: 2px;
-    background: var(--h-bg);
-    border: 1px solid var(--h-line);
-    border-radius: 50%;
+    background: transparent;
+    border: none;
+    /* Border remove */
+    border-radius: 8px;
+    /* Hover er jonno rounded */
     color: var(--h-text);
     cursor: pointer;
     transition: background 0.15s ease;
@@ -266,7 +279,7 @@
 }
 
 
-/* Chhoto laptop (1101px - 1280px): ektu compact, jate shob button ek line e fit hoy */
+/* Chhoto laptop (1101px - 1280px): ektu compact */
 
 @media (min-width: 1101px) and (max-width: 1280px) {
     .site-header-in {
@@ -277,7 +290,7 @@
         gap: 4px;
     }
     .site-header .nav-btn {
-        padding: 0 10px;
+        padding: 0 8px;
         font-size: 13px;
     }
     .site-header .logo {
