@@ -259,23 +259,37 @@
     box-shadow: 0 10px 24px rgba(22, 33, 62, .1);
 }
 
+
+/* লম্বা title ৩ লাইনে কাটা */
+
 .tpc-card b {
     font-size: 16px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
 }
 
 .tpc-card small {
     color: var(--muted);
 }
 
+
+/* description preview ৩ লাইনে কাটা */
+
 .tpc-desc {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    word-break: break-word;
 }
 
 .tpc-go {
-    margin-top: 6px;
+    margin-top: auto;
+    padding-top: 6px;
     font-size: 13px;
     font-weight: 700;
     color: var(--primary);
@@ -421,7 +435,7 @@
 }
 
 
-/* ============ Student: Article View (AI Style) ============ */
+/* ============ Student: Article View ============ */
 
 .tpc-article-wrap {
     max-width: 860px;
@@ -477,6 +491,7 @@
     color: var(--ink);
     margin: 0;
     line-height: 1.3;
+    word-break: break-word;
 }
 
 .tpc-meta {
@@ -514,19 +529,15 @@
 }
 
 
-/* RICH TEXT FIX: Eti plain text new line & spacing support kore */
+/* ---- Description: আসল HTML ---- */
 
 .tpc-rich-text {
     font-size: 16px;
     line-height: 1.8;
     color: var(--ink);
-    white-space: pre-wrap;
-    /* IMPORTANT: Eta Enter/Newline dhore rakhe */
     word-wrap: break-word;
+    /* white-space: pre-wrap সরানো হয়েছে, নইলে HTML-এ extra gap আসে */
 }
-
-
-/* Jodi HTML tags use koren tokhon er styling */
 
 .tpc-rich-text p {
     margin: 0 0 16px 0;
@@ -554,6 +565,47 @@
     font-weight: 700;
 }
 
+.tpc-rich-text img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+
+/* ---- Description: সাধারণ text (newline রক্ষা করে) ---- */
+
+.tpc-plain {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--ink);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+
+/* ---- Description: C code block ---- */
+
+.tpc-code {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px 18px;
+    border-radius: 12px;
+    overflow-x: auto;
+    font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre;
+    tab-size: 4;
+}
+
+.tpc-code code {
+    font-family: inherit;
+    background: none;
+    padding: 0;
+    color: inherit;
+}
+
 .tpc-questions-section {
     display: flex;
     flex-direction: column;
@@ -579,6 +631,10 @@
     }
     .tpc-title {
         font-size: 22px;
+    }
+    .tpc-code {
+        font-size: 13px;
+        padding: 14px;
     }
 }
 

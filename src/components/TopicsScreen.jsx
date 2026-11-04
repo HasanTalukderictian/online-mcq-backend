@@ -16,18 +16,63 @@ const readSaved = () => {
 // YouTube link -> video id
 const youtubeId = (url) => {
     if (!url) return "";
-    const m = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/);
+    const m = String(url).match(
+        /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/
+    );
     return m ? m[1] : "";
 };
 
-// Helper to strip HTML tags safely for the topic card preview
-const stripHtml = (html) => {
-    if (!html) return "";
-    // Replace block tags with space, then remove remaining tags
-    const withSpaces = html.replace(/<\/?(p|div|br|li|ul|ol|h[1-6])[^>]*>/gi, " ");
-    const doc = new DOMParser().parseFromString(withSpaces, 'text/html');
-    return doc.body.textContent || "";
+/* ---------- description helpers ---------- */
+
+// description C code কিনা
+const looksLikeCode = (s) => /#include\s*<|int\s+main\s*\(/.test(s);
+
+// description HTML কিনা
+const looksLikeHtml = (s) =>
+    /<\/?(p|div|br|ul|ol|li|h[1-6]|span|strong|b|em|i|a|img|table|pre|code)\b[^>]*>/i.test(s);
+
+// card preview-এর জন্য plain text
+const stripHtml = (text) => {
+    if (!text) return "";
+    if (!looksLikeHtml(text)) return text.replace(/\s+/g, " ").trim();
+    const withSpaces = text.replace(/<\/?(p|div|br|li|ul|ol|h[1-6])[^>]*>/gi, " ");
+    const doc = new DOMParser().parseFromString(withSpaces, "text/html");
+    return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
 };
+
+const truncate = (s, n = 140) => (s.length > n ? s.slice(0, n).trim() + "…" : s);
+
+// code অংশ আর "ব্যাখ্যা (Explanation)" অংশ আলাদা করা
+const splitCode = (text) => {
+    const m = text.match(/\n[^\n]*\(Explanation\)/);
+    if (!m) return { code: text.trim(), rest: "" };
+    return { code: text.slice(0, m.index).trim(), rest: text.slice(m.index).trim() };
+};
+
+function Description({ text }) {
+    if (!text) return null;
+
+    // 1) আগে code check (কারণ code-এ < > থাকে, HTML ভেবে ভুল হতে পারে)
+    if (looksLikeCode(text)) {
+        const { code, rest } = splitCode(text);
+        return (
+            <>
+                <pre className="tpc-code">
+                    <code>{code}</code>
+                </pre>
+                {rest && <div className="tpc-plain">{rest}</div>}
+            </>
+        );
+    }
+
+    // 2) আসল HTML
+    if (looksLikeHtml(text)) {
+        return <div className="tpc-rich-text" dangerouslySetInnerHTML={{ __html: text }} />;
+    }
+
+    // 3) সাধারণ text (newline রক্ষা হবে)
+    return <div className="tpc-plain">{text}</div>;
+}
 
 function Video({ url, title }) {
     if (!url) return null;
@@ -47,7 +92,9 @@ function Video({ url, title }) {
         );
     }
     return (
-        <a className="tpc-vlink" href={url} target="_blank" rel="noopener noreferrer">▶ Watch video</a>
+        <a className="tpc-vlink" href={url} target="_blank" rel="noopener noreferrer">
+            ▶ Watch video
+        </a>
     );
 }
 
@@ -62,7 +109,7 @@ function TopicsScreen({ initialSubjectId, onBack }) {
     useEffect(() => {
         try {
             sessionStorage.setItem(KEY, JSON.stringify({ subjectId: subjectId, topicId: topicId }));
-        } catch {}
+        } catch { }
     }, [subjectId, topicId]);
 
     const loadList = () => {
@@ -87,15 +134,24 @@ function TopicsScreen({ initialSubjectId, onBack }) {
         apiRequest("/public/topics/" + topicId)
             .then((b) => {
                 const d = getData(b) || {};
-                setDetail({ loading: false, error: "", topic: d.topic || null, questions: d.questions || [] });
+                setDetail({
+                    loading: false,
+                    error: "",
+                    topic: d.topic || null,
+                    questions: d.questions || [],
+                });
             })
-            .catch((err) => setDetail({ loading: false, error: err.message, topic: null, questions: [] }));
+            .catch((err) =>
+                setDetail({ loading: false, error: err.message, topic: null, questions: [] })
+            );
     }, [topicId]);
 
-    const subj = list.subjects.find((s) => String(s.id) === String(subjectId)) || list.subjects[0];
+    const subj =
+        list.subjects.find((s) => String(s.id) === String(subjectId)) || list.subjects[0];
 
     const toggle = (id) => setShown((s) => ({ ...s, [id]: !s[id] }));
-    const showAll = () => setShown(Object.fromEntries(detail.questions.map((q) => [q.id, true])));
+    const showAll = () =>
+        setShown(Object.fromEntries(detail.questions.map((q) => [q.id, true])));
     const hideAll = () => setShown({});
 
     /* ---------- one topic (ARTICLE VIEW) ---------- */
@@ -116,110 +172,34 @@ function TopicsScreen({ initialSubjectId, onBack }) {
                 {detail.error && (
                     <div className="panel loading-box">
                         <p>Could not load this topic: {detail.error}</p>
-                        <button type="button" className="btn" onClick={() => setTopicId(null)}>Back to topics</button>
+                        <button type="button" className="btn" onClick={() => setTopicId(null)}>
+                            Back to topics
+                        </button>
                     </div>
                 )}
 
                 {t && (
                     <article className="tpc-article">
-                        {/* Article Header - AI style */}
                         <header className="tpc-article-head">
-                            <span className="tpc-eyebrow">{t.icon} {t.subject}</span>
+                            <span className="tpc-eyebrow">
+                                {typeof t.subject === "object" && t.subject
+                                    ? `${t.subject.icon || ""} ${t.subject.name || ""}`
+                                    : `${t.icon || ""} ${t.subject || ""}`}
+                            </span>
                             <h1 className="tpc-title">{t.title}</h1>
-                            <div className="tpc-meta">
-                                <span>Last Updated: Today</span>
-                                <div className="tpc-meta-actions">
-                                    <span title="Comments">💬</span>
-                                    <span title="Edit">✏️</span>
-                                    <span title="More">⋮</span>
-                                </div>
-                            </div>
+                            
                         </header>
 
                         <div className="tpc-divider" />
 
-                        {/* Article Body */}
                         <div className="tpc-content">
                             {t.video_url && <Video url={t.video_url} title={t.title} />}
-                            
-                            {t.description && (
-                                <div 
-                                    className="tpc-rich-text" 
-                                    dangerouslySetInnerHTML={{ __html: t.description }} 
-                                />
-                            )}
+                            <Description text={t.description} />
                         </div>
 
-                        <div className="tpc-divider" />
+                       
 
-                        {/* Questions Section */}
-                        <div className="tpc-questions-section">
-                            {detail.questions.length === 0 ? (
-                                <div className="tpc-muted">Questions will be added soon.</div>
-                            ) : (
-                                <>
-                                    <div className="tpc-tools">
-                                        <h2>{detail.questions.length} Previous Year Questions</h2>
-                                        <span className="tpc-tool-btns">
-                                            <button type="button" className="btn ghost sm" onClick={showAll}>Show all</button>{" "}
-                                            <button type="button" className="btn ghost sm" onClick={hideAll}>Hide all</button>
-                                        </span>
-                                    </div>
-
-                                    <div className="tpc-q-list">
-                                        {detail.questions.map((q, i) => {
-                                            const open = !!shown[q.id];
-                                            return (
-                                                <div className="tpc-q" key={q.id}>
-                                                    <div className="tpc-q-head">
-                                                        <span className="tpc-num">{i + 1}</span>
-                                                        <div className="tpc-q-tags">
-                                                            {q.source && <span className="tpc-tag">{q.source}</span>}
-                                                            {q.year && <span className="tpc-tag year">{q.year}</span>}
-                                                        </div>
-                                                    </div>
-
-                                                    <p className="tpc-q-text">{q.question}</p>
-
-                                                    {q.options && q.options.length > 0 && (
-                                                        <ul className="tpc-opts">
-                                                            {q.options.map((o, k) => (
-                                                                <li key={k} className={open && q.answer === o ? "right" : ""}>
-                                                                    <b>{LETTERS[k]}</b>
-                                                                    <span>{o}</span>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-
-                                                    <button type="button" className="btn ghost sm" onClick={() => toggle(q.id)}>
-                                                        {open ? "Hide answer & solution" : "Show answer & solution"}
-                                                    </button>
-
-                                                    {open && (
-                                                        <div className="tpc-sol">
-                                                            {q.answer && (
-                                                                <div className="tpc-ans">✅ <b>Answer:</b> {q.answer}</div>
-                                                            )}
-                                                            {q.solution && (
-                                                                <div className="tpc-sol-text">
-                                                                    <b>Solution</b>
-                                                                    <p>{q.solution}</p>
-                                                                </div>
-                                                            )}
-                                                            <Video url={q.video_url} title="Solution video" />
-                                                            {!q.answer && !q.solution && !q.video_url && (
-                                                                <p className="tpc-muted">The solution will be added soon.</p>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                       
                     </article>
                 )}
             </section>
@@ -240,7 +220,9 @@ function TopicsScreen({ initialSubjectId, onBack }) {
             {list.error && (
                 <div className="panel loading-box">
                     <p>Could not load the topics: {list.error}</p>
-                    <button type="button" className="btn" onClick={loadList}>Try again</button>
+                    <button type="button" className="btn" onClick={loadList}>
+                        Try again
+                    </button>
                 </div>
             )}
 
@@ -262,23 +244,38 @@ function TopicsScreen({ initialSubjectId, onBack }) {
                                 style={{ "--c": s.color }}
                                 onClick={() => setSubjectId(s.id)}
                             >
-                                <span>{s.icon}</span>{s.name}
+                                <span>{s.icon}</span>
+                                {s.name}
                             </button>
                         ))}
                     </div>
 
                     <div className="tpc-grid">
-                        {subj && subj.topics.map((t) => (
-                            <button type="button" key={t.id} className="tpc-card" onClick={() => setTopicId(t.id)}>
-                                <b>{t.title}</b>
-                                {/* Use stripHtml to cleanly show text preview */}
-                                {t.description && <small className="tpc-desc">{stripHtml(t.description)}</small>}
-                                <small>
-                                    {t.questions_count} question(s){t.has_video ? " · 🎥 video" : ""}
-                                </small>
-                                <span className="tpc-go">Open →</span>
-                            </button>
-                        ))}
+                        {subj &&
+                            subj.topics.map((t) => (
+                                <button
+                                    type="button"
+                                    key={t.id}
+                                    className="tpc-card"
+                                    onClick={() => setTopicId(t.id)}
+                                >
+                                    <b>{t.title}</b>
+
+                                    {t.description &&
+                                        (looksLikeCode(t.description) ? (
+                                            <small className="tpc-desc">💻 Code + ব্যাখ্যা</small>
+                                        ) : (
+                                            <small className="tpc-desc">
+                                                {truncate(stripHtml(t.description))}
+                                            </small>
+                                        ))}
+
+                                    <small>
+                                        {t.questions_count} question(s){t.has_video ? " · 🎥 video" : ""}
+                                    </small>
+                                    <span className="tpc-go">Open →</span>
+                                </button>
+                            ))}
                     </div>
                 </>
             )}
