@@ -20,6 +20,8 @@ const EMPTY = {
 };
 
 const MAX_IMAGES = 6;
+const MAX_FILE_MB = 15; // upload-এর আগের original file limit
+const MAX_SIDE = 1600; // বড় ছবি এই size-এ ছোট করা হবে
 
 const splitTopics = (s) =>
     String(s || "")
@@ -29,6 +31,32 @@ const splitTopics = (s) =>
 
 // "5" -> "6", anything else -> ""
 const nextNo = (n) => (/^\d+$/.test(String(n || "")) ? String(Number(n) + 1) : "");
+
+// ছবি ছোট + compress করে data URL বানায় (upload দ্রুত হয়)
+const compressImage = (file) =>
+    new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            const scale = Math.min(1, MAX_SIDE / Math.max(img.width, img.height));
+            const w = Math.round(img.width * scale);
+            const h = Math.round(img.height * scale);
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#fff"; // transparent PNG-র জন্য সাদা background
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL("image/jpeg", 0.88));
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("Could not read this image file."));
+        };
+        img.src = url;
+    });
 
 const rowToForm = (r) => ({
     subject_id: r.subject_id ? String(r.subject_id) : "",
@@ -71,12 +99,14 @@ function PyqAdmin({ token, onUnauthorized }) {
     const [form, setForm] = useState(null);
     const [editId, setEditId] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [formError, setFormError] = useState("");
     const [fieldErr, setFieldErr] = useState({});
     const [note, setNote] = useState(null);
 
     const areaRef = useRef(null);
     const overlayRef = useRef(null);
+    const fileRef = useRef(null);
 
     const unauthorized = (err) => {
         if (err.status === 401) {
@@ -120,6 +150,63 @@ function PyqAdmin({ token, onUnauthorized }) {
             const next = f.images.filter((_, k) => k !== i);
             return { ...f, images: next.length ? next : [""] };
         });
+
+    // আপলোড হওয়া URL প্রথম ফাঁকা slot-এ বসায়, না থাকলে নতুন slot বানায়
+    const putUploaded = (url) =>
+        setForm((f) => {
+            const imgs = [...f.images];
+            const empty = imgs.findIndex((u) => !u.trim());
+            if (empty >= 0) imgs[empty] = url;
+            else if (imgs.length < MAX_IMAGES) imgs.push(url);
+            else return f;
+            return { ...f, images: imgs };
+        });
+
+    const onPickFiles = async (e) => {
+        const picked = Array.from(e.target.files || []);
+        e.target.value = ""; // একই file আবার বাছাই করা যাবে
+        if (picked.length === 0) return;
+
+        const filled = form.images.filter((u) => u.trim()).length;
+        const room = MAX_IMAGES - filled;
+        if (room <= 0) {
+            setFormError("You already have " + MAX_IMAGES + " images. Remove one first.");
+            return;
+        }
+
+        const files = picked.slice(0, room);
+        setFormError(picked.length > room ? "Only " + room + " more image(s) allowed, extra files were skipped." : "");
+        setUploading(true);
+
+        for (const file of files) {
+            if (!file.type.startsWith("image/")) {
+                setFormError(file.name + " is not an image.");
+                continue;
+            }
+            if (file.size > MAX_FILE_MB * 1024 * 1024) {
+                setFormError(file.name + " is larger than " + MAX_FILE_MB + " MB.");
+                continue;
+            }
+            try {
+                const dataUrl = await compressImage(file);
+                const res = await apiRequest("/pyq-solutions/upload-image", {
+                    method: "POST",
+                    token,
+                    body: { image: dataUrl },
+                });
+                const url = (getData(res) || {}).url;
+                if (!url) throw new Error("Upload failed. Please try again.");
+                putUploaded(url);
+            } catch (err) {
+                if (unauthorized(err)) {
+                    setUploading(false);
+                    return;
+                }
+                setFormError(err.message || "Upload failed.");
+            }
+        }
+        setUploading(false);
+    };
 
     const openAdd = () => {
         setEditId(null);
@@ -175,16 +262,25 @@ function PyqAdmin({ token, onUnauthorized }) {
     };
 
     const save = async (addNext) => {
+        const fail = (msg) => {
+            setFormError(msg);
+            if (overlayRef.current) overlayRef.current.scrollTop = 0;
+        };
+
+        if (uploading) {
+            fail("Please wait until the image upload finishes.");
+            return;
+        }
         if (!form.exam_name.trim()) {
-            setFormError("The exam name is required.");
+            fail("The exam name is required.");
             return;
         }
         if (!form.question.trim()) {
-            setFormError("The question is required.");
+            fail("The question is required.");
             return;
         }
         if (splitTopics(form.topics).length > 10) {
-            setFormError("Use at most 10 topics.");
+            fail("Use at most 10 topics.");
             return;
         }
 
@@ -198,46 +294,32 @@ function PyqAdmin({ token, onUnauthorized }) {
                 body: bodyOf(form),
             });
 
-           if (addNext && !editId) {
-    setForm({
-        ...EMPTY,
-        images: [""],
-
-        // আগের Exam Name ডিফল্ট থাকবে
-        exam_name: form.exam_name,
-
-        // আগের Exam Date ডিফল্ট থাকবে
-        exam_date: form.exam_date,
-
-        // আগের Subject ডিফল্ট থাকবে
-        subject_id: form.subject_id,
-
-        // আগের Question No. থেকে পরবর্তী নম্বর হবে
-        q_no: nextNo(form.q_no),
-    });
-
-    setNote({
-        type: "ok",
-        text: "Saved. Now add the next question for this exam.",
-    });
-
-    if (overlayRef.current) {
-        overlayRef.current.scrollTop = 0;
-    }
-} else {
-    setForm(null);
-    setNote({
-        type: "ok",
-        text: editId ? "Solution updated." : "Solution added.",
-    });
-}
+            if (addNext && !editId) {
+                setForm({
+                    ...EMPTY,
+                    images: [""],
+                    // আগের Exam Name, Exam Date, Subject ডিফল্ট থাকবে
+                    exam_name: form.exam_name,
+                    exam_date: form.exam_date,
+                    subject_id: form.subject_id,
+                    // আগের Question No. থেকে পরবর্তী নম্বর হবে
+                    q_no: nextNo(form.q_no),
+                });
+                setNote({ type: "ok", text: "Saved. Now add the next question for this exam." });
+                if (overlayRef.current) overlayRef.current.scrollTop = 0;
+            } else {
+                setForm(null);
+                setNote({ type: "ok", text: editId ? "Solution updated." : "Solution added." });
+            }
             load();
         } catch (err) {
-            if (unauthorized(err)) return;
-            setFieldErr(err.errors || {});
-            setFormError(err.message);
+            if (!unauthorized(err)) {
+                setFieldErr(err.errors || {});
+                fail(err.message || "Could not save. Please try again.");
+            }
+        } finally {
+            setSaving(false);
         }
-        setSaving(false);
     };
 
     const toggle = async (r) => {
@@ -390,12 +472,11 @@ function PyqAdmin({ token, onUnauthorized }) {
             {form && (
                 <div className="tp-overlay" ref={overlayRef}>
                     <div className="tp-modal wide" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-                        {/* X Icon added here */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
                             <h3 style={{ margin: 0 }}>{editId ? "Edit solution" : "Add solution"}</h3>
-                            <button 
-                                type="button" 
-                                onClick={() => !saving && setForm(null)} 
+                            <button
+                                type="button"
+                                onClick={() => !saving && !uploading && setForm(null)}
                                 style={{ background: "transparent", border: "none", fontSize: "20px", cursor: "pointer", color: "var(--muted)", padding: "0 5px" }}
                                 aria-label="Close"
                             >
@@ -497,26 +578,64 @@ function PyqAdmin({ token, onUnauthorized }) {
                         </label>
 
                         <div className="tp-field">
-                            <span>Reference images (links that start with https://, max {MAX_IMAGES})</span>
+                            <span>Reference images (upload from device or paste a https:// link, max {MAX_IMAGES})</span>
+
+                            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                                <input
+                                    ref={fileRef}
+                                    type="file"
+                                    accept="image/png,image/jpeg,image/webp,image/gif"
+                                    multiple
+                                    onChange={onPickFiles}
+                                    style={{ display: "none" }}
+                                />
+                                <button
+                                    type="button"
+                                    className="btn ghost sm"
+                                    disabled={uploading}
+                                    onClick={() => fileRef.current && fileRef.current.click()}
+                                >
+                                    {uploading ? "Uploading..." : "📤 Upload image(s)"}
+                                </button>
+                                <small className="adm-muted">JPG, PNG, WEBP or GIF. Large images are resized automatically.</small>
+                            </div>
+
                             {form.images.map((url, i) => (
-                                <div className="tp-imgrow" key={i}>
-                                    <input className="tp-input" value={url} onChange={(e) => setImage(i, e.target.value)} placeholder="https://..." />
+                                <div className="tp-imgrow" key={i} style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                                    <input
+                                        className="tp-input"
+                                        style={{ flex: 1, minWidth: 0 }}
+                                        value={url}
+                                        onChange={(e) => setImage(i, e.target.value)}
+                                        placeholder="https://... (or use the upload button)"
+                                    />
                                     {/^https?:\/\//i.test(url.trim()) && (
                                         <img
                                             src={url.trim()}
                                             alt=""
                                             loading="lazy"
                                             referrerPolicy="no-referrer"
+                                            style={{
+                                                width: 56,
+                                                height: 56,
+                                                maxWidth: 56,
+                                                maxHeight: 56,
+                                                flex: "0 0 56px",
+                                                objectFit: "cover",
+                                                borderRadius: 8,
+                                                border: "1px solid var(--line)",
+                                                background: "#fff",
+                                            }}
                                             onError={(e) => {
                                                 e.currentTarget.style.visibility = "hidden";
                                             }}
                                         />
                                     )}
-                                    <button type="button" className="btn ghost sm" onClick={() => removeImage(i)} aria-label="Remove image">✕</button>
+                                    <button type="button" className="btn ghost sm" style={{ flex: "none" }} onClick={() => removeImage(i)} aria-label="Remove image">✕</button>
                                 </div>
                             ))}
                             {form.images.length < MAX_IMAGES && (
-                                <button type="button" className="btn ghost sm" style={{ alignSelf: "flex-start" }} onClick={addImage}>＋ Add image</button>
+                                <button type="button" className="btn ghost sm" style={{ alignSelf: "flex-start" }} onClick={addImage}>＋ Add link manually</button>
                             )}
                             {(firstError("images") || Object.keys(fieldErr).some((k) => k.indexOf("images.") === 0)) && (
                                 <small className="tp-err">One of the image links is not valid. It must start with http:// or https://</small>
@@ -540,12 +659,14 @@ function PyqAdmin({ token, onUnauthorized }) {
                             </label>
                         </div>
 
+                        {formError && <div className="adm-note bad">{formError}</div>}
+
                         <div className="tp-foot" style={{ flexWrap: "wrap" }}>
-                            <button type="button" className="btn ghost" disabled={saving} onClick={() => setForm(null)}>Cancel</button>
+                            <button type="button" className="btn ghost" disabled={saving || uploading} onClick={() => setForm(null)}>Cancel</button>
                             {!editId && (
-                                <button type="button" className="btn ghost" disabled={saving} onClick={() => save(true)}>Save & add next</button>
+                                <button type="button" className="btn ghost" disabled={saving || uploading} onClick={() => save(true)}>Save & add next</button>
                             )}
-                            <button type="button" className="btn" disabled={saving} onClick={() => save(false)}>{saving ? "Saving..." : "Save"}</button>
+                            <button type="button" className="btn" disabled={saving || uploading} onClick={() => save(false)}>{saving ? "Saving..." : "Save"}</button>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 /* =========================================================
    Header.css
-   Desktop: 1101px and up   |   Mobile/tablet drawer: up to 1100px
+   Desktop: 1280px and up   |   Mobile/tablet drawer: up to 1279px
+   (Header.jsx-er matchMedia "(min-width: 1280px)" er sathe mila thakte hobe)
    ========================================================= */
 
 .site-header {
@@ -10,12 +11,13 @@
     --h-primary: var(--primary, #3347d6);
     --h-primary-soft: color-mix(in srgb, var(--h-primary) 14%, var(--h-bg));
     --h-hover: rgba(127, 127, 127, 0.14);
+    /* ✅ Website content (.wrap) er max-width er sathe mila rakho */
+    --wrap-w: 1144px;
     position: sticky;
     top: 0;
     z-index: 100;
     width: 100%;
     background: var(--h-bg);
-    /* ✅ Header er niche border ebong shadow remove */
     border-bottom: none;
     box-shadow: none;
     box-sizing: border-box;
@@ -32,10 +34,12 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: nowrap;
-    gap: 20px;
-    max-width: 1320px;
+    gap: 12px;
+    /* ✅ Header ekhon content-er width-er moddhei thakbe */
+    width: min(100% - 32px, var(--wrap-w));
+    max-width: var(--wrap-w);
     margin: 0 auto;
-    padding: 10px 24px;
+    padding: 10px 0;
     min-height: 62px;
 }
 
@@ -54,7 +58,7 @@
     border: 0;
     color: var(--h-text);
     font: inherit;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 800;
     letter-spacing: -0.2px;
     cursor: pointer;
@@ -76,7 +80,7 @@
 
 .site-header .logo-text {
     min-width: 0;
-    max-width: 260px;
+    max-width: 210px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -95,12 +99,8 @@
     flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-end;
-    gap: 8px;
-    /* Gap ektu bariye dilam jate text gula ektu faka thake */
+    gap: 2px;
 }
-
-
-/* ✅ Menu Button theke Circle & Border Removed */
 
 .site-header .nav-btn {
     flex: 0 0 auto;
@@ -108,16 +108,13 @@
     align-items: center;
     justify-content: center;
     height: 36px;
-    padding: 0 12px;
+    padding: 0 8px;
     background: transparent;
-    /* Background transparent kora holo */
     border: none;
-    /* Border remove */
     border-radius: 6px;
-    /* Hover er jonno halka rounded corner */
     color: var(--h-text);
     font: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     line-height: 1;
     white-space: nowrap;
@@ -128,9 +125,6 @@
 .site-header .nav-btn:hover {
     background: var(--h-hover);
 }
-
-
-/* Active Menu (Jemon Exam ba Home e thakle) */
 
 .site-header .nav-btn.on {
     background: var(--h-primary-soft);
@@ -171,9 +165,6 @@
 
 /* ---------- Theme button ---------- */
 
-
-/* ✅ Theme Button theke o Circle Removed */
-
 .site-header .theme-btn {
     flex: 0 0 auto;
     display: grid;
@@ -184,9 +175,7 @@
     margin-left: 2px;
     background: transparent;
     border: none;
-    /* Border remove */
     border-radius: 8px;
-    /* Hover er jonno rounded */
     color: var(--h-text);
     cursor: pointer;
     transition: background 0.15s ease;
@@ -269,46 +258,22 @@
 
 
 /* =========================================================
-   DESKTOP (1101px+)
+   DESKTOP (1280px+)
    ========================================================= */
 
-@media (min-width: 1101px) {
+@media (min-width: 1280px) {
     .site-header .status:not(.live) {
         display: none;
     }
 }
 
 
-/* Chhoto laptop (1101px - 1280px): ektu compact */
-
-@media (min-width: 1101px) and (max-width: 1280px) {
-    .site-header-in {
-        padding: 10px 16px;
-        gap: 12px;
-    }
-    .site-header .menu-scroll {
-        gap: 4px;
-    }
-    .site-header .nav-btn {
-        padding: 0 8px;
-        font-size: 13px;
-    }
-    .site-header .logo {
-        font-size: 17px;
-    }
-    .site-header .logo-text {
-        max-width: 190px;
-    }
-}
-
-
 /* =========================================================
-   MOBILE / TABLET (up to 1100px): sidebar drawer (bam theke)
+   MOBILE / TABLET (up to 1279px): sidebar drawer (bam theke)
    ========================================================= */
 
-@media (max-width: 1100px) {
+@media (max-width: 1279px) {
     .site-header-in {
-        padding: 10px 16px;
         min-height: 60px;
     }
     .site-header .logo-text {

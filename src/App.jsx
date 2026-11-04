@@ -20,6 +20,8 @@ import TopicsScreen from "./components/TopicsScreen";
 import PyqScreen from "./components/Common/PyqScreen";
 import ModelTestsScreen from "./components/Common/ModelTestsScreen";
 import ModelHistory from "./components/Common/ModelHistory";
+import Essential from "./components/Common/Essential";
+
 
 const SCREEN_KEY = "app_screen_v1";
 const ADMIN_PAGE_KEY = "admin_page_v1";
@@ -37,7 +39,7 @@ const initialScreen = () => {
     if (saved === "admin" && !(a && isAdminUser(a.user))) return "start";
     if ((saved === "login" || saved === "register") && a) return "start";
 
-    return ["start", "login", "register", "panel", "admin", "topics", "circulars", "about", "contact", "pyq", "model"].includes(saved) ? saved : "start";
+    return ["start", "login", "register", "panel", "admin", "topics", "circulars", "about", "contact", "pyq", "model", "essential"].includes(saved) ? saved : "start";
 };
 
 const DEFAULT_SITE = {
@@ -263,16 +265,16 @@ function App() {
         }
     };
 
-        const sendSubmit = async (data) => {
+    const sendSubmit = async (data) => {
         if (submittingRef.current) return;
         submittingRef.current = true;
         setSubmitting(true);
         setSubmitError("");
-        
+
         try {
-            // 👇 এক্সাম নাকি মডেল টেস্ট তার ভিত্তিতে আলাদা এন্ডপয়েন্ট
-            const endpoint = data.model 
-                ? `/student/model-tests/${data.examId}/submit` 
+            // 👇 এক্সাম নাকি মডেল টেস্ট তার ভিত্তিতে আলাদা এন্ডপয়েন্ট
+            const endpoint = data.model
+                ? `/student/model-tests/${data.examId}/submit`
                 : `/student/exams/${data.examId}/submit`;
 
             const body = await apiRequest(endpoint, {
@@ -280,19 +282,19 @@ function App() {
                 token,
                 body: data.body,
             });
-            
+
             const resData = getData(body);
 
             setSubmitting(false);
             submittingRef.current = false;
 
             // ==========================================
-            // 👇 ১. যদি এটি Model Test হয়
+            // 👇 ১. যদি এটি Model Test হয়
             // ==========================================
             if (data.model) {
                 setSession(null);
                 setPendingSubmit(null);
-                
+
                 // মডেল টেস্টে resData.attempt এবং published চেক করা হচ্ছে
                 if (resData.published) {
                     setModelNotice({
@@ -311,7 +313,7 @@ function App() {
             }
 
             // ==========================================
-            // 👇 ২. যদি এটি সাধারণ Subject Exam হয় (সাথে সাথেই রেজাল্ট দেখাবে)
+            // 👇 ২. যদি এটি সাধারণ Subject Exam হয় (সাথে সাথেই রেজাল্ট দেখাবে)
             // ==========================================
             setResult(toResult(resData));
             setPendingSubmit(null);
@@ -395,8 +397,8 @@ function App() {
 
     const openRecord = async (id, isModel = false) => {
         try {
-            const endpoint = isModel 
-                ? "/student/model-attempts/" + id 
+            const endpoint = isModel
+                ? "/student/model-attempts/" + id
                 : "/student/attempts/" + id;
 
             const body = await apiRequest(endpoint, { token });
@@ -519,9 +521,11 @@ function App() {
                     />
                 )}
 
+                {screen === "essential" && <Essential onBack={() => go("start")} />}
+
                 {screen === "about" && <AboutScreen site={site} onBack={() => go("start")} onContact={() => go("contact")} />}
                 {screen === "contact" && <ContactScreen site={site} onBack={() => go("start")} />}
-                
+
                 {screen === "quiz" && session && (
                     <QuizScreen
                         questions={session.questions}
@@ -534,7 +538,7 @@ function App() {
                 {screen === "result" && result && (
                     <ResultScreen {...result} candidate={userName} onRestart={() => go("start")} />
                 )}
-               
+
                 {screen === "detail" && record && (
                     <ResultScreen
                         {...record}
