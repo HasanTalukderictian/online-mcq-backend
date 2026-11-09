@@ -33,42 +33,12 @@ function StartScreen({ catalog, user, token, site, onStart, starting, startError
         exams[0];
 
     const isMobile = typeof window !== "undefined" && window.innerWidth <= 720;
-    const isTablet = typeof window !== "undefined" && window.innerWidth <= 992;
-
-    const subjectsGridStyle = {
-        display: "grid",
-        gridTemplateColumns: isMobile
-            ? "1fr"
-            : isTablet
-                ? "repeat(2, 1fr)"
-                : "repeat(3, 1fr)",
-        gap: isMobile ? "10px" : "12px",
-        width: "100%",
-    };
 
     const examListStyle = {
         display: "grid",
         gridTemplateColumns: "1fr",
         gap: isMobile ? "10px" : "8px",
         width: "100%",
-    };
-
-    const subjBtnStyle = {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: "100%",
-        maxWidth: "100%",
-        minHeight: isMobile ? "56px" : "52px",
-        padding: isMobile ? "14px 16px" : "10px 12px",
-        fontSize: isMobile ? "14.5px" : "13px",
-        textAlign: "left",
-        whiteSpace: "normal",
-        wordBreak: "break-word",
-        overflow: "visible",
-        textOverflow: "clip",
-        boxSizing: "border-box",
     };
 
     const examBtnStyle = {
@@ -89,6 +59,11 @@ function StartScreen({ catalog, user, token, site, onStart, starting, startError
     const pickFromShowcase = (id) => {
         pickSubject(id);
         const el = document.getElementById("exam-section");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    const scrollToSubjects = () => {
+        const el = document.getElementById("subjects-showcase");
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
@@ -121,8 +96,23 @@ function StartScreen({ catalog, user, token, site, onStart, starting, startError
         body = (
             <>
                 <div className="panel">
+                    <style>{`
+                        .picked-subj{
+                            display:flex; align-items:center; gap:12px;
+                            padding:12px 14px; margin-bottom:14px;
+                            border-radius:12px;
+                            border:1px solid color-mix(in srgb, var(--c, #4f46e5) 30%, transparent);
+                            border-left:4px solid var(--c, #4f46e5);
+                            background:color-mix(in srgb, var(--c, #4f46e5) 8%, var(--card, #fff));
+                        }
+                        .picked-ico{ font-size:22px; flex-shrink:0; }
+                        .picked-text{ display:flex; flex-direction:column; flex:1; min-width:0; }
+                        .picked-text small{ font-size:12px; color:var(--muted, #6b7280); }
+                        .picked-text b{ font-size:15px; overflow-wrap:anywhere; }
+                    `}</style>
+
                     <h1>Start your exam</h1>
-                    <p className="sub">Choose a subject and an exam.</p>
+                    <p className="sub">Choose an exam from the selected subject.</p>
 
                     {user ? (
                         <div className="acct in">👤 Exam as <b>{user.name}</b></div>
@@ -134,23 +124,13 @@ function StartScreen({ catalog, user, token, site, onStart, starting, startError
                     )}
 
                     <div className="pick-scroll">
-                        <span className="label" id="subjects-label">Subject</span>
-
-                        <div className="subjects" style={subjectsGridStyle}>
-                            {list.map((s) => (
-                                <button
-                                    key={s.id}
-                                    type="button"
-                                    className={"subj " + (subj.id === s.id ? "on" : "")}
-                                    style={{ "--c": s.color, ...subjBtnStyle }}
-                                    onClick={() => pickSubject(s.id)}
-                                >
-                                    <span style={{ fontSize: isMobile ? "20px" : "18px", flexShrink: 0, marginRight: "6px" }}>
-                                        {s.icon}
-                                    </span>
-                                    {s.name}
-                                </button>
-                            ))}
+                        <div className="picked-subj" style={{ "--c": subj.color }}>
+                            <span className="picked-ico">{subj.icon}</span>
+                            <div className="picked-text">
+                                <small>Selected subject</small>
+                                <b>{subj.name}</b>
+                            </div>
+                            
                         </div>
 
                         <span className="label">Exam</span>
@@ -219,9 +199,8 @@ function StartScreen({ catalog, user, token, site, onStart, starting, startError
             {/* Payment Info Section */}
             <PaymentSection />
 
-             {/* Model Test Section */}
-
-           <ModelTestSection token={token} onParticipate={onModel} />
+            {/* Model Test Section */}
+            <ModelTestSection token={token} onParticipate={onModel} />
 
             {/* Explore subjects Section with 3 columns */}
             <SubjectShowcase
