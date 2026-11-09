@@ -449,6 +449,7 @@ function App() {
                     <StartScreen
                         catalog={catalog}
                         user={auth && auth.user}
+                        token={token}
                         site={site}
                         onStart={handleStart}
                         starting={starting}
@@ -456,6 +457,7 @@ function App() {
                         onLogin={() => go("login")}
                         onRetry={loadCatalog}
                         onPyq={() => go("pyq")}
+                        onModel={() => go("model")}
                         onTopics={openTopics}
                         onCirculars={() => go("circulars")}
                     />

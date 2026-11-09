@@ -1,0 +1,162 @@
+.mts {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    /* 👇 full width fix */
+    width: 100%;
+    max-width: 1035px;
+    /* payment section er shathe mile thakbe */
+    box-sizing: border-box;
+    margin: 24px auto;
+    padding: 28px 32px;
+    border-radius: 20px;
+    color: #fff;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #db2777 120%);
+    box-shadow: 0 12px 32px rgba(79, 70, 229, 0.3);
+}
+
+.mts-glow {
+    position: absolute;
+    top: -80px;
+    right: -60px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    filter: blur(8px);
+    pointer-events: none;
+}
+
+.mts-main {
+    position: relative;
+    flex: 1 1 380px;
+    min-width: 0;
+}
+
+.mts-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.mts-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: mts-pulse 1.4s infinite;
+}
+
+@keyframes mts-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+    }
+}
+
+.mts-title {
+    margin: 14px 0 6px;
+    font-size: 26px;
+    line-height: 1.25;
+}
+
+.mts-sub {
+    margin: 0;
+    opacity: 0.9;
+    max-width: 560px;
+}
+
+.mts-info {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.mts-chip {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(4px);
+    max-width: 100%;
+}
+
+.mts-chip small {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.mts-chip b {
+    font-size: 16px;
+    overflow-wrap: anywhere;
+}
+
+.mts-side {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.mts-side small {
+    font-size: 12px;
+    opacity: 0.85;
+    max-width: 200px;
+}
+
+.mts-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: 0;
+    border-radius: 12px;
+    background: #fff;
+    color: #4f46e5;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mts-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.mts-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+    .mts {
+        padding: 22px 18px;
+    }
+    .mts-title {
+        font-size: 21px;
+    }
+    .mts-side,
+    .mts-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

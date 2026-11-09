@@ -4,6 +4,7 @@ import SubjectShowcase from "./SubjectShowcase";
 import Features from "./Features";
 import { fmtTime } from "../adminpanel/ui";
 import NoticeBar from "./NoticeBar";
+import ModelTestSection from "./ModelTestSection";
 
 // =============================
 // WhatsApp config (function er baire)
@@ -19,7 +20,7 @@ const WhatsAppIcon = ({ size = 28 }) => (
     </svg>
 );
 
-function StartScreen({ catalog, user, site, onStart, starting, startError, onLogin, onRetry, onTopics, onCirculars }) {
+function StartScreen({ catalog, user, token, site, onStart, starting, startError, onLogin, onRetry, onTopics, onCirculars, onModel }) {
     const [subjectId, setSubjectId] = useState(null);
     const [examId, setExamId] = useState(null);
 
@@ -217,6 +218,10 @@ function StartScreen({ catalog, user, site, onStart, starting, startError, onLog
 
             {/* Payment Info Section */}
             <PaymentSection />
+
+             {/* Model Test Section */}
+
+           <ModelTestSection token={token} onParticipate={onModel} />
 
             {/* Explore subjects Section with 3 columns */}
             <SubjectShowcase
