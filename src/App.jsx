@@ -22,9 +22,10 @@ import ModelTestsScreen from "./components/Common/ModelTestsScreen";
 import ModelHistory from "./components/Common/ModelHistory";
 import Essential from "./components/Common/Essential";
 
-
 const SCREEN_KEY = "app_screen_v1";
 const ADMIN_PAGE_KEY = "admin_page_v1";
+
+
 
 const initialScreen = () => {
     const a = getAuth();
@@ -55,7 +56,7 @@ const DEFAULT_SITE = {
     maintenance_message: "",
 };
 
-// API attempt -> props for ResultScreen (Exam)
+// API attempt -> props for ResultScreen (Subject Exam)
 const toResult = (a) => {
     const items = a.items || [];
     return {
@@ -72,7 +73,7 @@ const toResult = (a) => {
         score: a.score,
         penalty: a.penalty || 0,
         showAnswers: a.show_answers !== false,
-        subjectName: a.subject + " - " + a.exam,
+        subjectName: (a.subject || "Exam") + " - " + (a.exam || a.name || ""),
     };
 };
 
@@ -272,7 +273,6 @@ function App() {
         setSubmitError("");
 
         try {
-            // 👇 এক্সাম নাকি মডেল টেস্ট তার ভিত্তিতে আলাদা এন্ডপয়েন্ট
             const endpoint = data.model
                 ? `/student/model-tests/${data.examId}/submit`
                 : `/student/exams/${data.examId}/submit`;
@@ -288,23 +288,19 @@ function App() {
             setSubmitting(false);
             submittingRef.current = false;
 
-            // ==========================================
-            // 👇 ১. যদি এটি Model Test হয়
-            // ==========================================
             if (data.model) {
                 setSession(null);
                 setPendingSubmit(null);
 
-                // মডেল টেস্টে resData.attempt এবং published চেক করা হচ্ছে
                 if (resData.published) {
                     setModelNotice({
                         title: data.title,
-                        message: "Submitted! Your result is ready in the Student Panel."
+                        message: "Submitted! Your result is ready in the Student Panel.",
                     });
                 } else {
                     setModelNotice({
                         title: data.title,
-                        message: resData.message || `Submitted! Result on ${resData.publish_on}`
+                        message: resData.message || `Submitted! Result on ${resData.publish_on}`,
                     });
                 }
                 setScreen("model");
@@ -312,16 +308,12 @@ function App() {
                 return;
             }
 
-            // ==========================================
-            // 👇 ২. যদি এটি সাধারণ Subject Exam হয় (সাথে সাথেই রেজাল্ট দেখাবে)
-            // ==========================================
             setResult(toResult(resData));
             setPendingSubmit(null);
             setSession(null);
             setScreen("result");
             window.scrollTo({ top: 0 });
             loadCatalog();
-
         } catch (err) {
             setSubmitting(false);
             submittingRef.current = false;
@@ -395,25 +387,40 @@ function App() {
         window.scrollTo({ top: 0 });
     };
 
+    // Student Panel -> View button (Subject Exam + Model Test duitoi handle kore)
+    // NOTE: ekhane 401 holeo auto logout kora hoy na, jate login page-e na jay.
+    // Asol error alert-e dekhabe (URL + Status + message).
     const openRecord = async (id, isModel = false) => {
-        try {
-            const endpoint = isModel
-                ? "/student/model-attempts/" + id
-                : "/student/attempts/" + id;
+        if (!token) {
+            setScreen("login");
+            return;
+        }
 
+        const endpoint = isModel
+            ? "/student/model-attempts/" + id
+            : "/student/attempts/" + id;
+
+        try {
             const body = await apiRequest(endpoint, { token });
-            const resData = getData(body);
+            const resData = getData(body) || body?.data || body;
+            if (!resData) throw new Error("Empty response from server");
+
+            const att = resData.attempt || resData;
+            const items = resData.items || att.items || [];
 
             if (isModel) {
-                setRecord(toModelResult({ ...resData.attempt, items: resData.items }, resData.items));
+                setRecord(toModelResult({ ...resData, ...att, items }, items));
             } else {
-                setRecord(toResult(resData));
+                setRecord(toResult({ ...resData, ...att, items }));
             }
+
             setScreen("detail");
             window.scrollTo({ top: 0 });
         } catch (err) {
-            if (err.status === 401) forceLogout();
-            else window.alert(err.message);
+            console.error("openRecord failed:", endpoint, err.status, err.message, err);
+            window.alert(
+                "Failed: " + endpoint + "\nStatus: " + (err.status || "n/a") + "\n" + (err.message || "Unknown error")
+            );
         }
     };
 
@@ -495,12 +502,18 @@ function App() {
                         <StudentPanel
                             user={auth && auth.user}
                             token={token}
-                            onOpen={(id) => openRecord(id, false)}
+                            onOpen={(id, isModel) => openRecord(id, !!isModel)}
                             onStart={() => go("start")}
                             onLogin={() => go("login")}
                             onUnauthorized={forceLogout}
                         />
-                        {auth && <ModelHistory token={token} onUnauthorized={forceLogout} onOpenModel={() => go("model")} />}
+                        {auth && (
+                            <ModelHistory
+                                token={token}
+                                onUnauthorized={forceLogout}
+                                onOpenModel={() => go("model")}
+                            />
+                        )}
                     </>
                 )}
 
@@ -602,4 +615,6 @@ function App() {
     );
 }
 
+
 export default App;
+

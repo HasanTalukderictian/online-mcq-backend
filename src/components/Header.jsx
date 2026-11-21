@@ -93,19 +93,19 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
 
     // Menu items (desktop + mobile drawer duto-i ekhan theke ashe)
     const items = [
-        { key: "start",     label: "Home",            icon: "🏠", target: "start",     on: screen === "start",     show: !isAdmin, desk: false },
-        { key: "exam",      label: "Exam",            icon: "📝", target: "exam",      on: screen === "quiz",      show: true,     desk: true },
-        { key: "model",     label: "Model Test",      icon: "🏆", target: "model",     on: screen === "model",     show: true,     desk: true },
-        { key: "circulars", label: "Circulars",       icon: "💼", target: "circulars", on: screen === "circulars", show: true,     desk: true },
-        { key: "topics",    label: "Topics",          icon: "📌", target: "topics",    on: screen === "topics",    show: true,     desk: true },
-        { key: "pyq",       label: "Question Bank",   icon: "📚", target: "pyq",       on: screen === "pyq",       show: true,     desk: true },
+        { key: "start", label: "Home", icon: "🏠", target: "start", on: screen === "start", show: !isAdmin, desk: false },
+        { key: "exam", label: "Exam", icon: "📝", target: "exam", on: screen === "quiz", show: true, desk: true },
+        { key: "model", label: "Model Test", icon: "🏆", target: "model", on: screen === "model", show: true, desk: true },
+        { key: "circulars", label: "Circulars", icon: "💼", target: "circulars", on: screen === "circulars", show: true, desk: true },
+        { key: "topics", label: "Topics", icon: "📌", target: "topics", on: screen === "topics", show: true, desk: true },
+        { key: "pyq", label: "Question Bank", icon: "📚", target: "pyq", on: screen === "pyq", show: true, desk: true },
         // ✅ Essential Tools Button Add Kora Hoyeche
-        { key: "essential", label: "Essential Tools", icon: "🧰", target: "essential", on: screen === "essential", show: true,     desk: true },
-        { key: "panel",     label: "Student Panel",   icon: "📊", target: "panel",     on: inPanel,                show: !isAdmin, desk: true },
-        { key: "about",     label: "About Us",        icon: "ℹ️", target: "about",     on: screen === "about",     show: true,     desk: true },
-        { key: "contact",   label: "Contact",         icon: "✉️", target: "contact",   on: screen === "contact",   show: true,     desk: true },
-        { key: "admin",     label: "Dashboard",       icon: "🛠️", target: "admin",     on: screen === "admin",     show: isAdmin,  desk: true },
-        { key: "login",     label: "Login",           icon: "🔑", target: "login",     on: screen === "login",     show: !user,    desk: true },
+        { key: "essential", label: "Essential Tools", icon: "🧰", target: "essential", on: screen === "essential", show: true, desk: true },
+        { key: "panel", label: "Student Panel", icon: "📊", target: "panel", on: inPanel, show: !isAdmin, desk: true },
+        { key: "about", label: "About Us", icon: "ℹ️", target: "about", on: screen === "about", show: true, desk: true },
+        { key: "contact", label: "Contact", icon: "✉️", target: "contact", on: screen === "contact", show: true, desk: true },
+        { key: "admin", label: "Dashboard", icon: "🛠️", target: "admin", on: screen === "admin", show: isAdmin, desk: true },
+        { key: "login", label: "Login", icon: "🔑", target: "login", on: screen === "login", show: !user, desk: true },
     ].filter((i) => i.show);
 
     const doLogout = () => {
@@ -189,8 +189,16 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                     className="logo"
                     onClick={() => go(isAdmin ? "admin" : "start")}
                     title="Go to Home"
+                    style={{ display: "flex", alignItems: "center", gap: "10px", background: "none", border: "none", cursor: "pointer" }}
                 >
-                    <i>✓</i> <span className="logo-text">{site.site_name}</span>
+                    {/* 👇 এখানে আপনার লোগোটি যুক্ত করা হলো */}
+                    <img
+                        src="https://i.ibb.co.com/RGhcdLxm/logo.jpg"
+                        alt="Logo"
+                        style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }}
+                    />
+
+                    <span className="logo-text">{site.site_name}</span>
                 </button>
 
                 <button

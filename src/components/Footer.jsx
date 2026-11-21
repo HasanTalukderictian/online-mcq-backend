@@ -8,7 +8,18 @@ function Footer({ site }) {
             <div className="site-footer-in">
                 {/* Left: Brand + tagline */}
                 <div className="ft-col ft-brand">
-                    <h3 className="ft-logo">{site.site_name}</h3>
+                    
+                    {/* 👇 এখানে লোগো এবং সাইটের নাম পাশাপাশি বসানো হয়েছে */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                        <img 
+                            src="https://i.ibb.co.com/RGhcdLxm/logo.jpg" 
+                            alt="Logo" 
+                            style={{ width: "35px", height: "35px", borderRadius: "50%", objectFit: "cover" }} 
+                        />
+                        <h3 className="ft-logo" style={{ margin: 0 }}>{site.site_name}</h3>
+                    </div>
+                    {/* 👆 লোগো শেষ */}
+
                     {site.site_tagline && <p className="ft-tagline">{site.site_tagline}</p>}
                     {site.footer_text && <p className="ft-desc">{site.footer_text}</p>}
                 </div>
