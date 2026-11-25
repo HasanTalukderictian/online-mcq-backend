@@ -11,7 +11,7 @@ const lock = <><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11
 const eye = <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></>;
 const eyeOff = <><path d="M3 3l18 18" /><path d="M10.6 6.1A9.8 9.8 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.6 6.7A16.6 16.6 0 0 0 2 12s3.5 6 10 6a9.7 9.7 0 0 0 4.3-1" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></>;
 
-function Login({ onSuccess, onSwitch, reason }) {
+function Login({ onSuccess, onSwitch, onForgot, reason, notice }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [show, setShow] = useState(false);
@@ -52,6 +52,7 @@ function Login({ onSuccess, onSwitch, reason }) {
                 <h1>Sign in</h1>
                 <p className="sub">Enter your account details to continue.</p>
 
+                {notice && <div className="auth-note" role="status">✅ {notice}</div>}
                 {reason && <div className="auth-note">📝 Please sign in to take your exam.</div>}
                 {error && <div className="auth-error" role="alert">⚠️ {error}</div>}
 
@@ -85,9 +86,16 @@ function Login({ onSuccess, onSwitch, reason }) {
                     </button>
                 </div>
 
-                <label className="auth-remember">
-                    <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Keep me signed in
-                </label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <label className="auth-remember">
+                        <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Keep me signed in
+                    </label>
+                    {onForgot && (
+                        <button type="button" className="link-btn" onClick={onForgot}>
+                            Forgot password?
+                        </button>
+                    )}
+                </div>
 
                 <button className="btn full" disabled={loading}>
                     {loading ? <><span className="spin" /> Signing in...</> : "Sign in"}

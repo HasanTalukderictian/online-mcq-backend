@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { isAdminUser } from "./Auth/roles";
+import { pathFor } from "../components/config/routes";
 import '../css/Header.css';
 
 const labels = {
     start: "Home",
+    exam: "Exam",
     topics: "Important Topics",
     circulars: "Circulars",
     quiz: "Exam in progress",
@@ -13,12 +15,15 @@ const labels = {
     detail: "Record details",
     login: "Sign in",
     register: "Sign up",
+    forgot: "Forgot password",
+    reset: "Reset password",
     admin: "Admin Dashboard",
     about: "About",
     model: "Model test",
     pyq: "Previous year solutions",
     essential: "Essential Tools",
     contact: "Contact",
+    notfound: "Not found",
 };
 
 const themeIcon = (dark, size = 18) =>
@@ -91,21 +96,27 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
         onNav(target);
     };
 
-    // Menu items (desktop + mobile drawer duto-i ekhan theke ashe)
+    // Ctrl/Cmd/Shift-click or middle-click → let the browser open the page in a new tab
+    const linkClick = (e, target) => {
+        if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        go(target);
+    };
+
+    // Menu items (desktop + mobile drawer). Each one is its own page / URL.
     const items = [
         { key: "start", label: "Home", icon: "🏠", target: "start", on: screen === "start", show: !isAdmin, desk: false },
-        { key: "exam", label: "Exam", icon: "📝", target: "exam", on: screen === "quiz", show: true, desk: true },
+        { key: "exam", label: "Exam", icon: "📝", target: "exam", on: screen === "exam" || screen === "quiz" || screen === "result", show: true, desk: true },
         { key: "model", label: "Model Test", icon: "🏆", target: "model", on: screen === "model", show: true, desk: true },
         { key: "circulars", label: "Circulars", icon: "💼", target: "circulars", on: screen === "circulars", show: true, desk: true },
         { key: "topics", label: "Topics", icon: "📌", target: "topics", on: screen === "topics", show: true, desk: true },
         { key: "pyq", label: "Question Bank", icon: "📚", target: "pyq", on: screen === "pyq", show: true, desk: true },
-        // ✅ Essential Tools Button Add Kora Hoyeche
         { key: "essential", label: "Essential Tools", icon: "🧰", target: "essential", on: screen === "essential", show: true, desk: true },
         { key: "panel", label: "Student Panel", icon: "📊", target: "panel", on: inPanel, show: !isAdmin, desk: true },
         { key: "about", label: "About Us", icon: "ℹ️", target: "about", on: screen === "about", show: true, desk: true },
         { key: "contact", label: "Contact", icon: "✉️", target: "contact", on: screen === "contact", show: true, desk: true },
         { key: "admin", label: "Dashboard", icon: "🛠️", target: "admin", on: screen === "admin", show: isAdmin, desk: true },
-        { key: "login", label: "Login", icon: "🔑", target: "login", on: screen === "login", show: !user, desk: true },
+        { key: "login", label: "Login", icon: "🔑", target: "login", on: ["login", "register", "forgot", "reset"].includes(screen), show: !user, desk: true },
     ].filter((i) => i.show);
 
     const doLogout = () => {
@@ -113,7 +124,10 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
         onLogout();
     };
 
-    // ===== Mobile drawer (admin sidebar er moto) =====
+    // links look exactly like the old buttons
+    const linkReset = { textDecoration: "none", display: "inline-flex", alignItems: "center" };
+
+    // ===== Mobile drawer =====
     const drawer = (
         <>
             <div
@@ -140,15 +154,17 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
 
                 <nav className="mnav-list">
                     {items.map((i) => (
-                        <button
+                        <a
                             key={i.key}
-                            type="button"
+                            href={pathFor(i.target)}
                             className={"mnav-item " + (i.on ? "on" : "")}
-                            onClick={() => go(i.target)}
+                            aria-current={i.on ? "page" : undefined}
+                            style={linkReset}
+                            onClick={(e) => linkClick(e, i.target)}
                         >
                             <span className="mnav-ico">{i.icon}</span>
                             {i.label}
-                        </button>
+                        </a>
                     ))}
                 </nav>
 
@@ -181,25 +197,25 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
         </>
     );
 
+    const homeTarget = isAdmin ? "admin" : "start";
+
     return (
         <header className="site-header" ref={headerRef}>
             <div className="site-header-in">
-                <button
-                    type="button"
+                <a
+                    href={pathFor(homeTarget)}
                     className="logo"
-                    onClick={() => go(isAdmin ? "admin" : "start")}
+                    onClick={(e) => linkClick(e, homeTarget)}
                     title="Go to Home"
-                    style={{ display: "flex", alignItems: "center", gap: "10px", background: "none", border: "none", cursor: "pointer" }}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", background: "none", border: "none", cursor: "pointer", textDecoration: "none" }}
                 >
-                    {/* 👇 এখানে আপনার লোগোটি যুক্ত করা হলো */}
                     <img
                         src="https://i.ibb.co.com/RGhcdLxm/logo.jpg"
                         alt="Logo"
                         style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }}
                     />
-
                     <span className="logo-text">{site.site_name}</span>
-                </button>
+                </a>
 
                 <button
                     type="button"
@@ -222,14 +238,16 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                         </span>
 
                         {items.filter((i) => i.desk).map((i) => (
-                            <button
+                            <a
                                 key={i.key}
-                                type="button"
+                                href={pathFor(i.target)}
                                 className={"nav-btn " + (i.on ? "on" : "")}
-                                onClick={() => go(i.target)}
+                                aria-current={i.on ? "page" : undefined}
+                                style={linkReset}
+                                onClick={(e) => linkClick(e, i.target)}
                             >
                                 {i.label}
-                            </button>
+                            </a>
                         ))}
 
                         {user && (
@@ -251,7 +269,6 @@ function Header({ screen, theme, onToggleTheme, onNav, user, onLogout, site }) {
                 </nav>
             </div>
 
-            {/* Drawer ta body te render hoy, tai header er CSS ta ke bhangte pare na */}
             {typeof document !== "undefined" && createPortal(drawer, document.body)}
         </header>
     );

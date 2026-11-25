@@ -7,6 +7,8 @@ import ResultScreen from "./components/ResultScreen";
 import StudentPanel from "./components/StudentPanel";
 import Login from "./components/Common/Login";
 import Register from "./components/Common/Register";
+import ForgotPassword from "./components/Common/ForgotPassword";
+import ResetPassword from "./components/Common/ResetPassword";
 import AdminPanel from "./adminpanel/AdminPanel";
 
 import { apiRequest, getData } from "./adminpanel/api";
@@ -21,26 +23,27 @@ import PyqScreen from "./components/Common/PyqScreen";
 import ModelTestsScreen from "./components/Common/ModelTestsScreen";
 import ModelHistory from "./components/Common/ModelHistory";
 import Essential from "./components/Common/Essential";
+import { screenFromPath, pathFor, TITLES } from "./components/config/routes";
 
-const SCREEN_KEY = "app_screen_v1";
 const ADMIN_PAGE_KEY = "admin_page_v1";
 
+// Pages that need data in memory. If it's missing (e.g. after a refresh), go somewhere sensible.
+const resolveScreen = (s, { auth, session, result, record }) => {
+    const admin = !!(auth && isAdminUser(auth.user));
+    if (s === "quiz" && !session) return "start";
+    if (s === "result" && !result) return auth ? "panel" : "start";
+    if (s === "detail" && !record) return auth ? "panel" : "start";
+    if (s === "admin" && !admin) return auth ? "start" : "login";
+    if ((s === "login" || s === "register") && auth) return admin ? "admin" : "start";
+    return s;
+};
 
-
+// First page = the page in the URL
 const initialScreen = () => {
     const a = getAuth();
-    let saved = "";
-    try {
-        saved = sessionStorage.getItem(SCREEN_KEY) || "";
-    } catch { }
-
-    if (!saved) return a && isAdminUser(a.user) ? "admin" : "start";
-    if (saved === "quiz") return "start";
-    if (saved === "result" || saved === "detail") return a ? "panel" : "start";
-    if (saved === "admin" && !(a && isAdminUser(a.user))) return "start";
-    if ((saved === "login" || saved === "register") && a) return "start";
-
-    return ["start", "login", "register", "panel", "admin", "topics", "circulars", "about", "contact", "pyq", "model", "essential"].includes(saved) ? saved : "start";
+    const s = screenFromPath(window.location.pathname);
+    if (s === "start" && a && isAdminUser(a.user)) return "admin";
+    return resolveScreen(s, { auth: a, session: null, result: null, record: null });
 };
 
 const DEFAULT_SITE = {
@@ -105,6 +108,7 @@ function App() {
     const [topicsFocus, setTopicsFocus] = useState(null);
     const [pending, setPending] = useState("start");
     const [pendingExam, setPendingExam] = useState(null);
+    const [loginNotice, setLoginNotice] = useState("");
 
     const [modelNotice, setModelNotice] = useState(null);
     const [modelError, setModelError] = useState("");
@@ -133,14 +137,71 @@ function App() {
     const token = auth ? auth.token : null;
     const currentUser = auth ? auth.user : null;
 
+    /* ================= URL <-> page ================= */
+    // true → the next URL change replaces the history entry instead of adding one
+    const replaceNext = useRef(true);
+    const screenRef = useRef(screen);
+    const stateRef = useRef({});
+    screenRef.current = screen;
+    stateRef.current = { auth, session, result, record };
+
+    // page changed → update the address bar
+    useEffect(() => {
+        const want = pathFor(screen);
+        // 404: keep the URL the user typed in the address bar
+        if (screen !== "notfound" && window.location.pathname !== want) {
+            // (query string is dropped on purpose: e.g. the reset token is not kept in history)
+            const method = replaceNext.current ? "replaceState" : "pushState";
+            window.history[method]({ screen }, "", want);
+        }
+        replaceNext.current = false;
+    }, [screen]);
+
+    // browser Back / Forward → change page
+    useEffect(() => {
+        const onPop = () => {
+            const target = screenFromPath(window.location.pathname);
+
+            // exam running: ask before leaving, stay on the exam URL
+            if (screenRef.current === "quiz" && target !== "quiz") {
+                window.history.pushState({ screen: "quiz" }, "", pathFor("quiz"));
+                setPending(target);
+                setLeaveAsk(true);
+                return;
+            }
+
+            replaceNext.current = true;
+            setScreen(resolveScreen(target, stateRef.current));
+            window.scrollTo({ top: 0 });
+        };
+        window.addEventListener("popstate", onPop);
+        return () => window.removeEventListener("popstate", onPop);
+    }, []);
+
+    // browser tab title per page
+    useEffect(() => {
+        document.title = screen === "start" ? site.site_name : (TITLES[screen] || "") + " · " + site.site_name;
+    }, [screen, site.site_name]);
+
+    // Exam page → scroll to the exam list (waits until it is rendered)
+    useEffect(() => {
+        if (screen !== "exam") return undefined;
+        let tries = 0;
+        const t = setInterval(() => {
+            const el = document.getElementById("exam-section");
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+                clearInterval(t);
+            } else if (++tries > 40) clearInterval(t);
+        }, 100);
+        return () => clearInterval(t);
+    }, [screen]);
+    /* ================================================= */
+
     useEffect(() => {
         document.documentElement.dataset.theme = theme;
         try { localStorage.setItem("theme", theme); } catch { }
     }, [theme]);
-
-    useEffect(() => {
-        try { sessionStorage.setItem(SCREEN_KEY, screen); } catch { }
-    }, [screen]);
 
     useEffect(() => {
         if (screen !== "quiz") return undefined;
@@ -157,10 +218,6 @@ function App() {
             .then((b) => setSite({ ...DEFAULT_SITE, ...(getData(b) || {}) }))
             .catch(() => { });
     }, []);
-
-    useEffect(() => {
-        document.title = site.site_name;
-    }, [site.site_name]);
 
     const loadCatalog = async () => {
         setCatalog((c) => ({ ...c, loading: true, error: "" }));
@@ -251,6 +308,7 @@ function App() {
     const handleLogin = (user, tok) => {
         setAuth({ user, token: tok });
         window.scrollTo({ top: 0 });
+        replaceNext.current = true; // Back should not return to the login page
 
         if (isAdminUser(user)) {
             setPendingExam(null);
@@ -303,6 +361,7 @@ function App() {
                         message: resData.message || `Submitted! Result on ${resData.publish_on}`,
                     });
                 }
+                replaceNext.current = true; // Back should not return to the finished exam
                 setScreen("model");
                 window.scrollTo({ top: 0 });
                 return;
@@ -311,6 +370,7 @@ function App() {
             setResult(toResult(resData));
             setPendingSubmit(null);
             setSession(null);
+            replaceNext.current = true; // Back should not return to the finished exam
             setScreen("result");
             window.scrollTo({ top: 0 });
             loadCatalog();
@@ -346,19 +406,11 @@ function App() {
             setModelNotice(null);
             setModelError("");
         }
-        if (target === "admin" && !(auth && isAdminUser(auth.user))) target = "start";
         if (target !== "login" && target !== "register") setPendingExam(null);
 
-        if (target === "exam") {
-            setScreen("start");
-            setTimeout(() => {
-                const el = document.getElementById("exam-section");
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-            }, 80);
-        } else {
-            setScreen(target);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+        const next = resolveScreen(target, { auth, session, result, record });
+        setScreen(next);
+        if (next !== "exam") window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     const go = (target) => {
@@ -373,7 +425,11 @@ function App() {
     const confirmLeave = () => {
         setLeaveAsk(false);
         setSession(null);
-        navigate(pending);
+        replaceNext.current = true;
+        // session is cleared in the same tick, so resolve with session = null
+        const next = resolveScreen(pending, { auth, session: null, result, record });
+        setScreen(next);
+        window.scrollTo({ top: 0 });
     };
 
     const logout = () => {
@@ -387,18 +443,14 @@ function App() {
         window.scrollTo({ top: 0 });
     };
 
-    // Student Panel -> View button (Subject Exam + Model Test duitoi handle kore)
-    // NOTE: ekhane 401 holeo auto logout kora hoy na, jate login page-e na jay.
-    // Asol error alert-e dekhabe (URL + Status + message).
+    // Student Panel -> View button (Subject Exam + Model Test)
     const openRecord = async (id, isModel = false) => {
         if (!token) {
             setScreen("login");
             return;
         }
 
-        const endpoint = isModel
-            ? "/student/model-attempts/" + id
-            : "/student/attempts/" + id;
+        const endpoint = isModel ? "/student/model-attempts/" + id : "/student/attempts/" + id;
 
         try {
             const body = await apiRequest(endpoint, { token });
@@ -408,19 +460,14 @@ function App() {
             const att = resData.attempt || resData;
             const items = resData.items || att.items || [];
 
-            if (isModel) {
-                setRecord(toModelResult({ ...resData, ...att, items }, items));
-            } else {
-                setRecord(toResult({ ...resData, ...att, items }));
-            }
+            if (isModel) setRecord(toModelResult({ ...resData, ...att, items }, items));
+            else setRecord(toResult({ ...resData, ...att, items }));
 
             setScreen("detail");
             window.scrollTo({ top: 0 });
         } catch (err) {
             console.error("openRecord failed:", endpoint, err.status, err.message, err);
-            window.alert(
-                "Failed: " + endpoint + "\nStatus: " + (err.status || "n/a") + "\n" + (err.message || "Unknown error")
-            );
+            window.alert("Failed: " + endpoint + "\nStatus: " + (err.status || "n/a") + "\n" + (err.message || "Unknown error"));
         }
     };
 
@@ -452,7 +499,8 @@ function App() {
                 site={site}
             />
             <main className="wrap">
-                {screen === "start" && (
+                {/* Home and Exam pages both use StartScreen; Exam scrolls to the exam list */}
+                {(screen === "start" || screen === "exam") && (
                     <StartScreen
                         catalog={catalog}
                         user={auth && auth.user}
@@ -469,6 +517,7 @@ function App() {
                         onCirculars={() => go("circulars")}
                     />
                 )}
+
                 {screen === "topics" && (
                     <TopicsScreen initialSubjectId={topicsFocus} onBack={() => go("start")} />
                 )}
@@ -477,9 +526,27 @@ function App() {
 
                 {screen === "login" && (
                     <Login
-                        onSuccess={handleLogin}
+                        onSuccess={(u, t) => { setLoginNotice(""); handleLogin(u, t); }}
                         onSwitch={site.registration_open ? () => go("register") : undefined}
+                        onForgot={() => { setLoginNotice(""); go("forgot"); }}
                         reason={!!pendingExam}
+                        notice={loginNotice}
+                    />
+                )}
+
+                {screen === "forgot" && <ForgotPassword onBack={() => go("login")} />}
+
+                {screen === "reset" && (
+                    <ResetPassword
+                        onForgot={() => go("forgot")}
+                        onDone={(msg) => {
+                            // password changed → old token is no longer valid on the server
+                            if (auth) { clearAuth(); setAuth(null); }
+                            setLoginNotice(msg);
+                            replaceNext.current = true; // Back should not reopen the used link
+                            setScreen("login");
+                            window.scrollTo({ top: 0 });
+                        }}
                     />
                 )}
 
@@ -529,11 +596,7 @@ function App() {
                 )}
 
                 {screen === "pyq" && (
-                    <PyqScreen
-                        onBack={() => go("start")}
-                        user={currentUser}
-                        onLogin={(target) => go(target)}
-                    />
+                    <PyqScreen onBack={() => go("start")} user={currentUser} onLogin={(target) => go(target)} />
                 )}
 
                 {screen === "essential" && <Essential onBack={() => go("start")} />}
@@ -558,9 +621,18 @@ function App() {
                     <ResultScreen
                         {...record}
                         candidate={userName}
-                        onRestart={() => setScreen("panel")}
+                        onRestart={() => go("panel")}
                         restartLabel="Back to Student Panel"
                     />
+                )}
+
+                {screen === "notfound" && (
+                    <div className="panel loading-box" style={{ textAlign: "center" }}>
+                        <div style={{ fontSize: 48 }}>🧭</div>
+                        <h2>Page not found</h2>
+                        <p>The page you are looking for does not exist.</p>
+                        <button className="btn" onClick={() => go("start")}>Go to Home</button>
+                    </div>
                 )}
             </main>
             <Footer site={site} />
@@ -615,6 +687,4 @@ function App() {
     );
 }
 
-
 export default App;
-
